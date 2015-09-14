@@ -1,8 +1,8 @@
-#include <stdio.h>
+#include "headers.h"
 
 void menu()
 {
-	printf("\n---------------------------");
+	printf("\n*****************************");
 	printf("\n");
 	printf("Enter string of digits(number) to add to stack");
     printf("\n\n --CALCULATIONS");
@@ -16,20 +16,21 @@ void menu()
 	
     printf("\n --Miscellaneous");
     printf("\n//-------------------");
-	printf("\n \'I\' to check is top(last) number prime by probability test by GMPLIB");
-	printf("\n \'B\' to check is top(last) number prime by my checker");
-	printf("\n \'F\' to find primitive root");
-	printf("\n \'G\' to generate prime");
+	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
+	printf("\n \'b\' to check is top(last) number prime by my checker");
+	printf("\n \'root\' to find primitive root");
+	printf("\n \'gs\' to generate prime");
 	printf("\n");
     
     printf("\n --Op-s with stack");
     printf("\n//-------------------");
-    printf("\n \'L\' to get top(last) number");
-	printf("\n \'D\' to delete top");
-	printf("\n \'A\' to show all stack");
-    printf("\n \'W\' to write(append) all stack to file");
-    printf("\n \'V\' to write(append) only head of stack to file");
-    printf("\n \'R\' to read file and add to stack");
-	printf("\n \'M\' to show this menu");
-	printf("\n \'E\' to exit\n\n");
+    printf("\n \'h\' to get top(last) number");
+	printf("\n \'del\' to delete top");
+	printf("\n \'a\' to show all stack");
+    printf("\n \'Write\' to write(append) all stack to file");
+    printf("\n \'v\' to write(append) only head of stack to file");
+    printf("\n \'r\' to read file and add to stack");
+	printf("\n \'m\' to show this menu");
+	printf("\n \'e\' or smth else not in list above to exit");
+    printf("\n\n");
 }
