@@ -62,18 +62,23 @@ int main()
 		}
 		else
 		// Delete
-		if (input.compare("del")==0)
+		if (input.compare("d")==0)
 		{
 			Stack.del();
 		}
 		else
+        if (input.compare("c")==0)
+        {
+            Stack.clear();
+        }
+        else
         // ALL
 		if (input.compare("a")==0)
 		{
 			Stack.show();
 		}
 		else
-        if (input.compare("Write")==0)
+        if (input.compare("w")==0)
         {
             Stack.writeAll();
         }
@@ -83,7 +88,7 @@ int main()
             Stack.writeOne();
         }
         else
-        if (input.compare("r")==0)
+        if (input.compare("re")==0)
         {
             Stack.read();
         }
@@ -96,7 +101,7 @@ int main()
 		}
         else
         // find primitive root
-		if (input.compare("root")==0)
+		if (input.compare("r")==0)
 		{
 			Stack.root();
 		}		
@@ -187,6 +192,11 @@ int main()
         if (input.compare("gs")==0)
         {
             Stack.gen_short_prime();
+        }
+        else
+        if (input.compare("gl")==0)
+        {
+            Stack.gen_long_prime();
         }
         else
 		goto END;

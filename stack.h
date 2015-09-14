@@ -25,6 +25,7 @@ class stack
     void add(const char* str, int sys);
     void add(mpz_t num);
     void del();
+    void clear();
     void last();
     void show();
     void writeOne();
@@ -38,5 +39,6 @@ class stack
     bool gmp_test();
     void root();
     void gen_short_prime();
+    void gen_long_prime();
 };
 #endif

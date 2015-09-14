@@ -63,16 +63,27 @@ void stack::del()
         this->num--;
         mpz_set_ui(this->array[this->num], 0);
     }
+    cout<<"Last number deleted"<<endl;
+}
+
+void stack::clear()
+{
+    if (!this->is_empty())
+    {
+        this->num=0;
+    }
+    cout<<"Stack is cleared"<<endl;
 }
 
 void stack::last()
 {
     if (!this->is_empty())
-        cout<<this->array[this->num-1]<<endl;
+        cout<<"Last number is - "<<this->array[this->num-1]<<endl;
 }
 
 void stack::show()
 {
+    cout<<"Size of stack is: "<<this->num<<endl;
     cout<<"All stack from bottom :"<<endl;
     for (int i=0; i<this->num; i++)
 		cout<<this->array[i]<<endl;
@@ -110,7 +121,7 @@ void stack::read()
     IN.open(stream.c_str());
     while (!IN.eof() && IN.good() && this->num < SIZE_STACK)
     {
-        cin>>this->array[this->num++];
+        IN>>this->array[this->num++];
     }
     IN.close();
     cout<<endl;
@@ -288,7 +299,7 @@ void stack::root()
                     }
                 }
                 else
-                gmp_printf("%Zd is not primitive root\n", variable);
+                    gmp_printf("%Zd is not primitive root\n", variable);
                 if (FLAG == 1)
                 //cin >> EMPTY_VARIABLE;
                     getchar();
@@ -296,6 +307,7 @@ void stack::root()
             }
         }
     }
+    cout<<"Returned to main menu"<<endl;
 }
 
 void stack::gen_short_prime()
@@ -357,10 +369,10 @@ void stack::gen_short_prime()
 		if (j<number)
 		{
 			++(degs[j]);
-			/*
+			//comment HERE
 			printf("\n DEGS \n");
 			for (i=0; i<number; ++i) gmp_printf("%Zd - %d\n",primes[i],degs[i]);
-			*/
+			
 			// make number
             mpz_set_ui(now, 1);
 			for (i=0; i<number; ++i)
@@ -389,7 +401,7 @@ void stack::gen_short_prime()
                     int f=0,R=0;
                     mpz_t deg;
                     mpz_init(deg);
-                    while (f!=1 && R<10)
+                    while (f!=1 && R<50)
                     {
                         f=1;
                         mpz_urandomm(var, NewState, now);
@@ -433,17 +445,180 @@ void stack::gen_short_prime()
                         //gmp_printf("\n%Zd is not primitive root",var);
                         R++;
                     }
-                    //if (f!=1) printf("Didn't find primive root\n");
-                    gmp_randclear(NewState);
+                    if (f!=1)
+                        printf("Didn't find primive root\n");
+                    else
+                    {
+                        cout<<"If want to store press \'s\'"<<endl;
+                        cin>>S;
+                        if (S.compare("s") == 0)
+                            this->add(now1);
+                        cout<<"Enter \'e\' to exit"<<endl;
+                        cin>>S;
+                        if (S.compare("e") == 0)
+                            goto END;
+                    }
+                }
+		}
+	}
+    END:
+    printf("\nEnd of generation\n");
+}
+
+
+
+void stack::gen_long_prime()
+{
+	long long i, n, j, number, MAX_DEG, MIN_DEG, all, t, border;
+	mpz_t primes[10000];
+	long long degs[10000];
+	mpz_t var;
+	mpz_t var1;
+	mpz_t now;
+	mpz_t now1;
+	mpz_t mult;
+	mpz_t MAX;
+    mpz_init(var);
+	mpz_init(var1);
+	mpz_init(now);
+	mpz_init(now1);
+	mpz_init(mult);
+    mpz_init(MAX);
+    
+	char str[20];
+	string S;
+    
+    mpz_set_str(MAX, "10000000000000000000000000000", 10);
+    
+	//freopen("result.txt", "w", stdout);
+	//printf("Enter number of using primes : ");
+	
+    cout<<"Enter number using numbers from stack or 0 to use all"<<endl;
+    cin>>border;
+    if (border==0)
+        number = this->num;
+    else
+        number = border;
+    
+    for (i=0; i<number; i++) mpz_set(primes[i], this->array[i]);
+	cout<<"Enter MAX_DEG: ";
+	cin>>MAX_DEG;
+	cout<<"Enter MIN_DEG: ";
+	cin>>MIN_DEG;
+    
+	cout<<"Number of using primes : "<<number<<endl;
+	printf("Entered MAX_DEG : %lld\n",MAX_DEG);
+	printf("Entered MIN_DEG : %lld\n",MIN_DEG);
+	
+	cout<<"\nEnter \'1\' to see all checked numbers or \'0\' to see only prime\n";
+	cin>>all;
+	cout<<endl;
+    
+	for (i = 0; i < number && mpz_cmp(this->array[i], MAX) < 0; i++) degs[i]=MIN_DEG;	
+    for (; i < number; i++) degs[i]=1;
+    j=0;
+	while (j<number && mpz_cmp(this->array[j], MAX) < 0)
+	{
+		j=0;
+		while ((degs[j]==MAX_DEG) && (j<number) && mpz_cmp(this->array[j], MAX)  < 0)
+		{
+			degs[j]=MIN_DEG;
+			++j;
+		}
+
+		if (j<number && mpz_cmp(this->array[j], MAX)  < 0)
+		{
+			++(degs[j]);
+			//comment HERE
+			printf("\n DEGS \n");
+			for (i=0; i<number; ++i) gmp_printf("%Zd - %d\n",primes[i],degs[i]);
+			
+			// make number
+            mpz_set_ui(now, 1);
+			for (i=0; i<number; ++i)
+                if (degs[i]!=0)
+                {
+                    mpz_pow_ui(mult, primes[i], degs[i]);
+                    mpz_mul(now, now, mult);
+                }
+			mpz_add_ui(now1, now, 1);
+			if (all==1) 
+			{
+				cout<<"Testing for prime: "<<now1;
+			}
+			// done
+			t=mpz_probab_prime_p(now1,20);
+            if ((t==2) && all) 
+                cout<<" - Definitely prime"<<endl;
+            else
+                if ((t==0) && all) 
+                    cout<<" - Composite: "<<endl;
+                else
+                {
+                    gmp_randstate_t	NewState;
+                    gmp_randinit_default(NewState);
                     
-                    cout<<endl<<"If want to store press \'s\'"<<endl;
-                    cin>>S;
-                    if (S.compare("s") == 0)
-                        this->add(now1);
-                    cout<<"Enter \'e\' to exit"<<endl;
-                    cin>>S;
-                    if (S.compare("e") == 0)
-                        goto END;
+                    int f=0,R=0;
+                    mpz_t deg;
+                    mpz_init(deg);
+                    while (f!=1 && R<50)
+                    {
+                        f=1;
+                        mpz_urandomm(var, NewState, now);
+                        mpz_add_ui(var, var, 2);
+                        for (i=0; (i<number) && f; i++)
+                        if (degs[i]!=0)
+                        {	
+                            mpz_cdiv_q(deg,now,primes[i]);
+                            mpz_powm(var1, var , deg, now1);
+                            if (mpz_cmp_ui(var1, 1)==0) f=0;
+                        }
+                        mpz_powm(var1, var , now, now1);
+                        if (mpz_cmp_ui(var1,1)!=0) f=0;
+                        if (f==1)
+                        {
+                            gmp_printf("\n%Zd - primitive root of \n %Zd = \n =",var,now1);
+                            for (i=0; (i<number-1) && f; i++)
+                                if (degs[i]!=0)
+                                    gmp_printf("%Zd^(%d)*", primes[i], degs[i]);
+                                gmp_printf("%Zd^(%d)\n", primes[i], degs[i]);
+                            /*
+                            for (j=0; j<degs[i]; j++)
+                            {	
+                                gmp_printf("%Zd*",primes[i]);
+                            }
+                            */
+                            //printf("1+1\n");
+                            printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now1,10));
+                            printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now1,2));
+                            cout<<"New number is here."<<endl;
+                            
+                            /*
+                            for (i=0;(i<num_divisors) && f;i++)
+                            {	
+                                mpz_cdiv_q(deg,local,divisors[i]);
+                                gmp_printf("\n%Zd in power of %Zd by module %Zd = 1",var,deg,a[now-1]);
+                            }
+                            */
+                        }
+                        //else
+                        //gmp_printf("\n%Zd is not primitive root",var);
+                        R++;
+                    }
+                    if (f!=1)
+                        printf("Didn't find primive root\n");
+                    else
+                    {
+                        cout<<"If want to store press \'s\'"<<endl;
+                        cin>>S;
+                        if (S.compare("s") == 0)
+                            this->add(now1);
+                        cout<<"Enter \'e\' to exit"<<endl;
+                        cin>>S;
+                        if (S.compare("e") == 0)
+                            goto END;
+                    }
+                    gmp_randclear(NewState);    
                 }
 		}
 	}

@@ -9,7 +9,7 @@ int main()
 	{
 		t=2;
 		f=1;
-		while (t*t<n && f)
+		while (t*t<=n && f)
 		{
 			if (n % t == 0) f=0;
 			else t++;
