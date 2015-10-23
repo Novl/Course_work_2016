@@ -1,8 +1,8 @@
 #ifndef _STACK_H_
 #define _STACK_H_
+
 #include "headers.h"
-#include <string.h>
-#include <string>
+
 
 const int SIZE_STACK=40;
 const int NUM_DIV_1=200;

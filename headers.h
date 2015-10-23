@@ -11,6 +11,8 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <string.h>
+#include <string>
 
 #include "menu.h"
 

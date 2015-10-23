@@ -1,19 +1,19 @@
 #Comms
-CC=g++
+CC=g++ -Wall -Wextra
 GMP=-lgmp -lgmpxx
-FILES = Source.o menu.o stack.o
+FILES = ./Source.o ./menu.o ./stack.o
 
 result: source  $(FILES)
 	$(CC) $(FILES) $(GMP) -o result_win
     
 source: Source.cpp menu  stack
-	$(CC) Source.cpp -c
+	$(CC) ./Source.cpp -c
     
 menu: menu.h menu.cpp headers.h
-	$(CC) menu.cpp -c
+	$(CC) ./menu.cpp -c
 
 stack: stack.cpp stack.h
-	$(CC) $(GMP) stack.cpp -c
+	$(CC) $(GMP) ./stack.cpp -c
 
 clean:
 	rm -rf $(FILES)

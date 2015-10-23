@@ -312,7 +312,7 @@ void stack::root()
 
 void stack::gen_short_prime()
 {
-	long long i,n,j,number,MAX_DEG,MIN_DEG,all,t;
+	long long i,j,number,MAX_DEG,MIN_DEG,all,t;
 	mpz_t primes[10000];
 	long long degs[10000];
 	mpz_t var;
@@ -469,7 +469,7 @@ void stack::gen_short_prime()
 
 void stack::gen_long_prime()
 {
-	long long i, n, j, number, MAX_DEG, MIN_DEG, all, t, border;
+	long long i, j, number, MAX_DEG, MIN_DEG, all, t, border;
 	mpz_t primes[10000];
 	long long degs[10000];
 	mpz_t var;
@@ -485,7 +485,6 @@ void stack::gen_long_prime()
 	mpz_init(mult);
     mpz_init(MAX);
     
-	char str[20];
 	string S;
     
     mpz_set_str(MAX, "10000000000000000000000000000", 10);

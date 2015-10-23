@@ -10,9 +10,7 @@ stack Stack;
 
 
 int main()
-{	
-	unsigned long int i, j;
-	
+{		
 	menu();
 	while  (true) //(scanf("%s", str)>0) 
 	{
