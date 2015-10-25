@@ -1,19 +1,26 @@
 #Comms
-CC=g++ -Wall -Wextra
+CC=g++ -Wall #-Wextra
 GMP=-lgmp -lgmpxx
-FILES = ./Source.o ./menu.o ./stack.o
+BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack
+SrcDir = ./src
+ResDir = ../build
+IncludeDir = ./include
+BuildDir = ./build
 
-result: source  $(FILES)
-	$(CC) $(FILES) $(GMP) -o result_win
-    
-source: Source.cpp menu  stack
-	$(CC) ./Source.cpp -c
-    
-menu: menu.h menu.cpp headers.h
-	$(CC) ./menu.cpp -c
+result: source
+	$(CC) $(BuildFILES) $(GMP) -o result_win
 
-stack: stack.cpp stack.h
-	$(CC) $(GMP) ./stack.cpp -c
+source: $(SrcDir)/Source.cpp menu  stack
+	$(CC) $(SrcDir)/Source.cpp -c -o $(BuildDir)/Source
+
+menu: $(SrcDir)/menu.cpp $(IncludeDir)/menu.h $(IncludeDir)/headers.h
+	$(CC) $(SrcDir)/menu.cpp -c -o $(BuildDir)/menu
+
+stack: $(SrcDir)/stack.cpp $(IncludeDir)/stack.h
+	$(CC) $(SrcDir)/stack.cpp -c -o $(BuildDir)/stack
 
 clean:
 	rm -rf $(FILES)
+    
+start: result
+	result_win.exe

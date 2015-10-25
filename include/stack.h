@@ -3,7 +3,6 @@
 
 #include "headers.h"
 
-
 const int SIZE_STACK=40;
 const int NUM_DIV_1=200;
 const int NUM_DIV_2=100;

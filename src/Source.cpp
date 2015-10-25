@@ -1,5 +1,5 @@
-#include "headers.h"
-#include "stack.h"
+#include "../include/headers.h"
+#include "../include/stack.h"
 
 using namespace std;
 
@@ -11,7 +11,7 @@ stack Stack;
 
 int main()
 {		
-	menu();
+  	menu();
 	while  (true) //(scanf("%s", str)>0) 
 	{
         cin>>input;
