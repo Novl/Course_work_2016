@@ -2,4 +2,6 @@
 #define MENU_H
 
 void menu();
+void short_menu();
+
 #endif

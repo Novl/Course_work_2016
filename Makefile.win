@@ -1,5 +1,5 @@
 #Comms
-CC=g++ -Wall #-Wextra
+CC=g++ #-Wall #-Wextra
 GMP=-lgmp -lgmpxx
 BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack
 SrcDir = ./src
