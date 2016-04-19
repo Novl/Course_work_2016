@@ -3,7 +3,7 @@
 
 #include "headers.h"
 
-const int SIZE_STACK=40;
+const int SIZE_STACK=400;
 const int NUM_DIV_1=200;
 const int NUM_DIV_2=100;
 
@@ -27,6 +27,7 @@ class stack
     void del();
     void clear();
     void last();
+    void head();
     void show();
     void writeOne();
     void writeAll();
@@ -36,7 +37,7 @@ class stack
     void mul();
     void cdiv();
     void powm();
-    bool gmp_test();
+    int gmp_test();
     void root();
     void gen_short_prime();
     void gen_long_prime();

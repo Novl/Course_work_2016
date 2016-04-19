@@ -2,14 +2,14 @@
 
 using namespace std;
 
-//extern void menu();
-//extern void short_menu();
 
 stack::stack()
 {
     this->num = 0;
     mpz_init(variable);
+    unsigned long curtime = (unsigned long)time(NULL);
     gmp_randinit_default(state);
+    gmp_randseed_ui(state, curtime);
     for (int i=0; i<SIZE_STACK; i++) 
     {
         mpz_init(this->array[i]);
@@ -73,7 +73,7 @@ void stack::clear()
 {
     if (!this->is_empty())
     {
-        this->num=0;
+        this->num = 0;
     }
     cout<<"Stack is cleared"<<endl;
 }
@@ -84,11 +84,18 @@ void stack::last()
         cout<<"Last number is - "<<this->array[this->num-1]<<endl;
 }
 
+void stack::head()
+{
+    if (!this->is_empty())
+        cout<<"Last number is - "<<this->array[this->num-1]<<endl;
+}
+
 void stack::show()
 {
+    cout<<endl;
     cout<<"Size of stack is: "<<this->num<<endl;
-    cout<<"All stack from bottom :"<<endl;
-    for (int i=0; i<this->num; i++)
+    cout<<"All stack from top:"<<endl;
+    for (int i = 0; i < this->num; ++i)
 		cout<<this->array[i]<<endl;
 }
 
@@ -96,7 +103,7 @@ void stack::writeOne()
 {
     fstream OUT;
     string stream;
-    cout<<"Enter name(path) of file: ";
+    cout<<"Enter name(path) of file(appending writing): ";
     cin>>stream;
     OUT.open(stream.c_str(), fstream::app | fstream::out);
     OUT<<this->array[this->num-1]<<endl;
@@ -107,10 +114,10 @@ void stack::writeOne()
 void stack::writeAll()
 {
     fstream OUT;
-    cout<<endl<<"Enter name(path) of file: ";
+    cout<<"Enter name(path) of file(appending writing): ";
     cin>>stream;
     OUT.open(stream.c_str(), fstream::app | fstream::out);
-    for (int i=this->num; i>0; i--)
+    for (int i = this->num; i > 0; --i)
         OUT<<this->array[i-1]<<endl;
     OUT.close();
     cout<<endl;
@@ -118,13 +125,20 @@ void stack::writeAll()
 
 void stack::read()
 {
+    int number;
     ifstream IN;
     cout<<endl<<"Enter name(path) of file: ";
     cin>>stream;
+    cout<<"Enter number of numbers or '0' to read all(max = "<<SIZE_STACK<<"):";
+    cin>>number;
+    if (number == 0)
+        number = SIZE_STACK;
+    
     IN.open(stream.c_str());
-    while (!IN.eof() && IN.good() && this->num < SIZE_STACK)
+    while (!IN.eof() && IN.good() && this->num < SIZE_STACK && number > 0)
     {
         IN>>this->array[this->num++];
+        --number;
     }
     IN.close();
     cout<<endl;
@@ -207,71 +221,77 @@ void stack::powm()
     }
 }
 
-bool stack::gmp_test()
+int stack::gmp_test()
 {
     if (this->num == 0)
         cout<<"Stack is empty"<<endl;
     else
     {
-        unsigned long long t = mpz_probab_prime_p(this->array[this->num-1], 20);
+        int accuracy = 25;
+        int t = mpz_probab_prime_p(this->array[this->num-1], accuracy);
         cout<<this->array[this->num-1]<<endl;
-        if (t==2) 
+        cout<<"Accuracy = "<<accuracy<<"(probability fail less 2^50)"<<endl;
+        if (t == 2) 
         {
             cout<<"Definitely prime"<<endl;
-            return true;
+            //return true;
         }
         else
-            if (t==1)
+            if (t == 1)
             {
                 cout<<"Undetermined"<<endl;
-                return false;
+                //return false;
             }
             else 
             {
                 cout<<"Composite"<<endl;
-                return false;
+                //return false;
             }
+        return t;
     }
 }
 
 void stack::root()
 {
-    if (!this->gmp_test())
+    if (this->gmp_test() == 0)
         cout<<"Not exist for not prime"<<endl;
     else
     {
-        mpz_t r;
-        mpz_init(r);
         int FLAG = 0;
-        cout<<"Enter '1' to see result one by one or '0' to skip"<<endl;
+        cout<<"Enter '1' to see results one by one or '0' to skip"<<endl;
         cin>>FLAG;
-        cout<<endl;
+        
         if (this->num == 0)
         {
             cout<<"Stack is empty"<<endl;
         }
         else
         {
-            int num_divisors=0;
+            int num_divisors = 0;
             mpz_t divisors[NUM_DIV_1];
-            for (int i=0; i<NUM_DIV_1; i++) 
-                    mpz_init(divisors[i]);
-                
+            
+            // copying initial number from stack
             mpz_t local;
             mpz_init_set(local, this->array[this->num-1]);
             mpz_sub_ui(local, local, 1);
-            for (int i=2; i<400000; i++)
+            //
+            // Trial division
+            mpz_t r;
+            mpz_init(r);
+            for (int i = 2; i < 400000 && num_divisors < NUM_DIV_1; ++i)
             {	
-                if (mpz_mod_ui(r, local, i)==0)
+                if (mpz_mod_ui(r, local, i) == 0)
                 {
                     while (mpz_mod_ui(r, local, i)==0)
                         mpz_cdiv_q_ui(local, local, i);
+                    mpz_init(divisors[num_divisors]);
                     mpz_set_ui(divisors[num_divisors], i);
                     ++num_divisors;
                 }
             }
+            //
             
-            int f=0, R=0;
+            int f = 0, R = 0, max_tries = 100;
             mpz_t variable1;
             mpz_init(variable1);
             mpz_t deg;
@@ -279,19 +299,23 @@ void stack::root()
             
             mpz_sub_ui(local, this->array[this->num-1], 1);
             
-            while (f!=1 && R<100)
+            while (f != 1 && R < max_tries)
             {
-                f=1;
+                f = 1;
+                // set 'variable' as a possible root
                 mpz_sub_ui(variable, this->array[this->num-1], 1); // p-1
                 mpz_urandomm(variable,  state,  variable); // from 0 to p-2 
                 mpz_add_ui(variable,  variable,  1); // from 1 to p-1
-                for (int i=0; (i<num_divisors) && f;i++)
+                for (int i = 0; (i < num_divisors) && f; ++i)
                 {	
                     mpz_cdiv_q(deg,  local, divisors[i]);
                     mpz_powm(variable1,  variable ,  deg, this->array[this->num-1]);
-                    if (mpz_cmp_ui(variable1, 1)==0) f=0;
+                    // all modules shoud be non '1'
+                    if (mpz_cmp_ui(variable1, 1) == 0) 
+                        f = 0;
                 }
-                if (f==1)
+                //
+                if (f == 1)
                 {
                     gmp_printf("%Zd - primitive root of %Zd\n", variable, this->array[this->num-1]);
                     for (int i=0;(i<num_divisors) && f;i++)
@@ -302,17 +326,20 @@ void stack::root()
                     }
                 }
                 else
+                {
                     gmp_printf("%Zd is not primitive root\n", variable);
-                if (FLAG == 1)
-                //cin >> EMPTY_VARIABLE;
-                    getchar();
-                R++;
+                    if (FLAG == 1)
+                        getchar();
+                }
+                ++R;
             }
         }
     }
     cout<<"Returned to main menu"<<endl;
 }
 
+
+// - ----- -----------------------------------------------------------------------------------------
 void stack::gen_short_prime()
 {
 	long long i,j,number,MAX_DEG,MIN_DEG,all,t;
@@ -332,12 +359,17 @@ void stack::gen_short_prime()
 	string S;
     
 	FILE *f1;
-	
-    f1=fopen("primes.txt", "r");
-	for (i=0; i<10000; ++i) gmp_fscanf(f1,"%Zd\n", primes[i]);
+
+    f1 = fopen("primes.txt", "r");
+	for (i=0; i<10000; ++i) 
+    {
+        mpz_init(primes[i]);
+        gmp_fscanf(f1,"%Zd\n", primes[i]);
+    }
 	fclose(f1);
 	
-	printf("Enter \'f\' to read from file \'test.txt\'  ");
+    
+	printf("Enter \'f\' to read from file \'test.txt\'\n  ");
 	scanf("%s",str);
 	if (str[0]=='f') freopen("test.txt", "r", stdin);
 	//freopen("result.txt", "w", stdout);
