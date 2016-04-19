@@ -1,15 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h> 
 #include <iostream>
 #include <vector>
 #include <fstream>
 
-#define CEIL 10000000
 #define OUTPUT "primes.txt"
 
+long CEIL = 1000000;
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
+    if (argc > 1)
+        CEIL = atol(argv[1]);
     vector<int> UNS(CEIL);
     
 	ofstream OutStream(OUTPUT);
