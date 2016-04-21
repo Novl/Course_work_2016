@@ -1,3 +1,8 @@
+/*
+    Generates primes numbers up to 1000000 or first input parametr
+    and print in file primes.txt at the same directory
+*/
+
 #include <stdio.h>
 #include <stdlib.h> 
 #include <iostream>
