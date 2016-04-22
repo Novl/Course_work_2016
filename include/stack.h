@@ -39,8 +39,8 @@ class stack
     void powm();
     int gmp_test();
     void root();
-    bool root(int, int, mpz_t* );
+    bool root(const int, const mpz_t, const int, const mpz_t*,const int* );
+    void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_short_prime();
-    //void gen_long_prime();
 };
 #endif

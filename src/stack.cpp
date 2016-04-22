@@ -258,6 +258,8 @@ int stack::gmp_test()
     return -1;
 }
 
+
+// with  trial divisions up to 400000
 void stack::root()
 {
     if (this->gmp_test() == 0)
@@ -351,43 +353,78 @@ void stack::root()
 
 
 // for generation with parametrs
-
-bool stack::root(int max_tries, int num_divisors, mpz_t* divisors)
+// without trial divisions
+// based on factorization N
+bool stack::root(const int max_tries, const mpz_t N, const int num_divisors, const mpz_t* divisors, const int* degs)
 {
-    int f = 0, R = 0;
+    // roots[] for using Theorem 1.23 from Vasilenko O.N.
+    // N - assuming prime number
+    mpz_t roots[num_divisors];
+    int f = 0, R = 0, found_roots = 0;
+    // variable1 - for computing
     mpz_t variable1;
     mpz_init(variable1);
-    mpz_t deg;
-    mpz_init(deg);
-    mpz_t local;
-    mpz_init(local);
+    mpz_t degree;
+    mpz_init(degree);
+    mpz_t localN1;  // N-1
+    mpz_init(localN1);
     
-    mpz_sub_ui(local, this->array[this->num-1], 1);
+    mpz_sub_ui(localN1, N, 1);
+    
+    for (int i = 0; i < num_divisors; ++i)
+        mpz_init_set_ui(roots[i], 0);
     
     while (f != 1 && R < max_tries)
     {
         f = 1;
         // set 'variable' as a possible root
-        mpz_sub_ui(variable, this->array[this->num-1], 1); // p-1
+        mpz_sub_ui(variable, N, 1); // p-1
         mpz_urandomm(variable,  state,  variable); // from 0 to p-2 
         mpz_add_ui(variable,  variable,  1); // from 1 to p-1
-        for (int i = 0; (i < num_divisors) && f; ++i)
-        {	
-            mpz_cdiv_q(deg,  local, divisors[i]);
-            mpz_powm(variable1,  variable ,  deg, this->array[this->num-1]);
-            // all modules shoud be non '1'
-            if (mpz_cmp_ui(variable1, 1) == 0) 
-                f = 0;
+        // Fermat's theorem
+        mpz_powm(variable1, variable, localN1, N);
+        //
+        if (mpz_cmp_ui(variable1, 1) == 0)
+            while (found_roots < num_divisors && f)
+            {	
+                mpz_cdiv_q(degree,  localN1, divisors[found_roots]);
+                mpz_powm(variable1,  variable ,  degree, N);
+                // all modules shoud be non '1'   -  // a[i] ^ (n / p[i]) != 1 (mod n)
+                if (mpz_cmp_ui(variable1, 1) == 0) 
+                    f = 0;
+                else
+                    mpz_set(roots[found_roots++], variable1);
+            }
+        else
+        {
+            cout<<"Not prime from Fermat's little theorem"<<endl;
+            return false;
         }
         //
-        if (f == 1)
+        if (found_roots == num_divisors)
         {
-            gmp_printf("%Zd - primitive root of %Zd\n", variable, this->array[this->num-1]);
+            // making root
+            mpz_set_ui(variable, 1);
+            mpz_t ordA;
+            mpz_init(ordA);
+            for (int i = 0; i < num_divisors; ++i)
+            {
+                ord(ordA, roots[i], N, num_divisors, divisors, degs);
+                mpz_set(degree, ordA );
+                mpz_pow_ui(variable1, divisors[i], degs[i]); // p[i] ^ deg[i]
+                mpz_cdiv_q(variable1, degree, variable1);  // ord / (p[i] ^ deg[i])
+                mpz_powm(variable1, roots[i], variable1, N);
+                mpz_mul(variable, variable, variable1);
+                mpz_mod(variable, variable, N);
+            }
+            mpz_clear(ordA);
+            //
+            gmp_printf("%Zd - primitive root of %Zd\n", variable, N);
             this->add(variable);
             /*
             for (int i=0;(i<num_divisors) && f;i++)
             {	
-                mpz_cdiv_q(deg, local, divisors[i]);
+                mpz_cdiv_q(deg, localN1, divisors[i]);
                 mpz_powm(variable1, variable , deg, this->array[this->num-1]);
                 gmp_printf("%Zd in power of %Zd by module %Zd =  %Zd\n", variable, deg, this->array[this->num-1], variable1);
             }
@@ -404,8 +441,10 @@ bool stack::root(int max_tries, int num_divisors, mpz_t* divisors)
         ++R;
     }
     mpz_clear(variable1);
-    mpz_clear(deg);
-    mpz_clear(local);
+    mpz_clear(degree);
+    mpz_clear(localN1);
+    for (int i = 0; i < num_divisors; ++i)
+        mpz_clear(roots[i]);
     
     //cout<<"Returned to main menu"<<endl;
     if (f == 1)

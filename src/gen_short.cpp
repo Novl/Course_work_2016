@@ -2,22 +2,16 @@
 // - ----- -----------------------------------------------------------------------------------------
 void stack::gen_short_prime()
 {
-	long long i, j, number, MAX_DEG, MIN_DEG, all, t;
+	long long i, j, number, MAX_DEG, MIN_DEG, all;
     int MaxNumberOfPrimes = 10000, NumberOfPrimes;
 	mpz_t primes[MaxNumberOfPrimes];
-	long long degs[MaxNumberOfPrimes];
-	mpz_t var;
-	mpz_t var1;
+	int degs[MaxNumberOfPrimes];
 	mpz_t now;
-	mpz_t now1;
 	mpz_t mult;
-	mpz_init(var);
-	mpz_init(var1);
 	mpz_init(now);
-	mpz_init(now1);
 	mpz_init(mult);
 	char str[250];
-	char s;
+	string s;
 
 	FILE *f1;
 // reading basic using primes 
@@ -27,6 +21,7 @@ void stack::gen_short_prime()
         strcpy(str, "primes.txt\0");
     f1 = fopen(str, "r");
 
+    mpz_init(primes[0]);
 	for (i = 0; i < 10000  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
     {
         mpz_init(primes[i+1]);
@@ -88,47 +83,40 @@ void stack::gen_short_prime()
                     mpz_pow_ui(mult, primes[i], degs[i]);
                     mpz_mul(now, now, mult);
                 }
-			mpz_add_ui(now1, now, 1);
+			mpz_add_ui(now, now, 1);
 			if (all == 1) 
 			{
-				cout<<"Testing for prime:"<<endl<<now1<<endl;
+				cout<<"Testing for prime:"<<endl<<now<<endl;
 			}
 			// done
             
-            this->add(now1);
-			t = stack::gmp_test();
+			int t = mpz_probab_prime_p(now, 25);
             
             if (t == 1) 
             {
-                if (this->root(50, number, primes))
+                if (this->root(50, now, number, primes, degs))
                 {
                     //comment HERE
                     printf("DEGS:\n");
                     for (i = 0; i < number; ++i) 
                     gmp_printf("%Zd - %d\n", primes[i], degs[i]);
-                    printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now1,10));
-                    printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now1,2));
-                    cout<<"New number and root in stack"<<endl;
+                    printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now,10));
+                    printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now,2));
+                    cout<<now<<endl;
+                    this->add(now);
+                    cout<<"New root and number in stack"<<endl;
                     cout<<"Enter 's' to stop"<<endl;
                     cin>>s;
-                    if (s == 's') goto END;
+                    if (s.compare("s") == 0) goto END;
                 }   
                 else
-                {
                     printf("Didn't find primive root\n");
-                    this->del();
-                }
             }
-            else
-                this->del();
  		}
 	}
     END:
     printf("\nEnd of generation\n");
-    mpz_clear(var);
-	mpz_clear(var1);
 	mpz_clear(now);
-	mpz_clear(now1);
 	mpz_clear(mult);
     for (i = 0; i <= NumberOfPrimes ; ++i) 
         mpz_clear(primes[i]);
