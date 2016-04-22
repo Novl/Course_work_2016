@@ -1,6 +1,6 @@
 #Comms
-CC=g++ #-Wall #-Wextra
-GMP=-lgmp -lgmpxx
+CC=g++ -Wall -Wextra
+FLAGS=-lgmp -lgmpxx -std=c99
 BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack $(BuildDir)/algos
 SrcDir = ./src
 ResDir = ../build
@@ -9,7 +9,7 @@ BuildDir = ./build
 Algos = ./src/gen_short.cpp
 
 result: source algos
-	$(CC) $(BuildFILES) $(GMP) -o result_win
+	$(CC) $(BuildFILES) $(FLAGS) -o result_win
 
 source: $(SrcDir)/Source.cpp menu  stack
 	$(CC) $(SrcDir)/Source.cpp -c -o $(BuildDir)/Source
@@ -26,5 +26,5 @@ algos: $(Algos)
 clean:
 	rm -rf $(FILES)
     
-start: result
+start: result_win.exe
 	result_win.exe

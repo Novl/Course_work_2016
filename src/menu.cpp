@@ -33,7 +33,7 @@ void menu()
     printf("\n \'re\' to read file and add to stack");
 	printf("\n \'m\' to show this menu");
     printf("\n \'sm\' to show short menu");
-	printf("\n \'e\' or smth else not in list above to exit");
+	printf("\n \'e\' to exit");
     printf("\n\n");
 };
 
@@ -47,7 +47,7 @@ void short_menu()
 	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
 	printf("\n \'r\' to find primitive root");
 	printf("\n \'gs\' to generate \'short\' prime");
-    printf("\n \'gl\' to generate \'long\' prime");
+    //printf("\n \'gl\' to generate \'long\' prime");
 	printf("\n");
     
 	printf("\n \'m\' to show this menu");

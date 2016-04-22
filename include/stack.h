@@ -22,9 +22,9 @@ class stack
     bool isValid(std::string input);
     bool is_full();
     bool is_empty();
-    void add(const char* str, int sys);
-    void add(mpz_t num);
-    void del();
+    bool add(const char* str, int sys);
+    bool add(mpz_t num);
+    bool del();
     void clear();
     void last();
     void head();
@@ -39,7 +39,8 @@ class stack
     void powm();
     int gmp_test();
     void root();
+    bool root(int, int, mpz_t* );
     void gen_short_prime();
-    void gen_long_prime();
+    //void gen_long_prime();
 };
 #endif
