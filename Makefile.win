@@ -1,13 +1,14 @@
 #Comms
 CC=g++ #-Wall #-Wextra
 GMP=-lgmp -lgmpxx
-BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack
+BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack $(BuildDir)/algos
 SrcDir = ./src
 ResDir = ../build
 IncludeDir = ./include
 BuildDir = ./build
+Algos = ./src/gen_short.cpp
 
-result: source
+result: source algos
 	$(CC) $(BuildFILES) $(GMP) -o result_win
 
 source: $(SrcDir)/Source.cpp menu  stack
@@ -19,6 +20,9 @@ menu: $(SrcDir)/menu.cpp $(IncludeDir)/menu.h $(IncludeDir)/headers.h
 stack: $(SrcDir)/stack.cpp $(IncludeDir)/stack.h
 	$(CC) $(SrcDir)/stack.cpp -c -o $(BuildDir)/stack
 
+algos: $(Algos)
+	$(CC) $(Algos) -c -o $(BuildDir)/algos
+    
 clean:
 	rm -rf $(FILES)
     

@@ -1,7 +1,7 @@
 #ifndef _STACK_H_
 #define _STACK_H_
 
-#include "headers.h"
+#include "../include/headers.h"
 
 const int SIZE_STACK=400;
 const int NUM_DIV_1=200;
@@ -11,7 +11,7 @@ class stack
 {
     private:
     int num;
-    std::string stream;
+    string stream;
     mpz_t array[SIZE_STACK];
     mpz_t variable;
     gmp_randstate_t	state;

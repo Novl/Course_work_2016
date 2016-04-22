@@ -1,7 +1,4 @@
-#include "../include/headers.h"
 #include "../include/stack.h"
-
-using namespace std;
 
 string s;
 stack Stack;
