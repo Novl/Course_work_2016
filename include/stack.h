@@ -42,5 +42,6 @@ class stack
     bool root(const int, const mpz_t, const int, const mpz_t*,const int* );
     void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_short_prime();
+    bool KP(const mpz_t, const int, const mpz_t*, const int*);
 };
 #endif

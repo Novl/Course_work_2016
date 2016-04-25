@@ -4,7 +4,7 @@ string s;
 stack Stack;
 
 
-int main(int argv, char* args[])
+int main()//(int argv, char* args[])
 {		
   	menu();
     cin>>s;

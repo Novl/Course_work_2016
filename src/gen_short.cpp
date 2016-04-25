@@ -92,6 +92,12 @@ void stack::gen_short_prime()
             
 			int t = mpz_probab_prime_p(now, 25);
             
+            if (t == 2) 
+            {
+                if (all == 1)
+                    cout<<"Definitely prime by GMP prob test"<<endl;
+            }
+            else
             if (t == 1) 
             {
                 if (this->root(50, now, number, primes, degs))
@@ -105,6 +111,9 @@ void stack::gen_short_prime()
                     cout<<now<<endl;
                     this->add(now);
                     cout<<"New root and number in stack"<<endl;
+                    cout<<"Enter kp to seed result of Konyagin-Pomerance test"<<endl;
+                    cin>>s;
+                    if (s.compare("kp") == 0) KP(now, number, primes, degs);
                     cout<<"Enter 's' to stop"<<endl;
                     cin>>s;
                     if (s.compare("s") == 0) goto END;
@@ -112,6 +121,9 @@ void stack::gen_short_prime()
                 else
                     printf("Didn't find primive root\n");
             }
+            else
+                if (all == 1)
+                    cout<<"Definitely composite"<<endl;
  		}
 	}
     END:

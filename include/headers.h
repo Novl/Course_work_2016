@@ -14,6 +14,8 @@
 #include <cstdlib>
 #include <string.h>
 #include <string>
+#include <math.h> 
+#include <cmath>
 
 #include "menu.h"
 
