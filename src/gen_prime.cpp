@@ -1,6 +1,6 @@
 #include "../include/stack.h"
 // - ----- -----------------------------------------------------------------------------------------
-void stack::gen_short_prime()
+void stack::gen_prime()
 {
 	long long i, j, number, MAX_DEG, MIN_DEG, all;
     int MaxNumberOfPrimes = 10000, NumberOfPrimes;

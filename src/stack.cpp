@@ -631,9 +631,9 @@ bool stack::isValid(string input)
     }
     else
     */
-    if (input.compare("gs")==0)
+    if (input.compare("g")==0)
     {
-        this->gen_short_prime();
+        this->gen_prime();
     }
     // else
     // if (input.compare("gl")==0)
