@@ -39,7 +39,7 @@ class stack
     void powm();
     int gmp_test();
     void root();
-    bool root(const int, const mpz_t, const int, const mpz_t*,const int* );
+    bool root(mpz_t, const int, const mpz_t, const int, const mpz_t*,const int* );
     void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_prime();
     bool KP(const mpz_t, const int, const mpz_t*, const int*);
