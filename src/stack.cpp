@@ -378,14 +378,9 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
     {
         f = 1;
         // set 'variable' as a possible root
-        if (R == 0)
-            mpz_set_ui(variable, 1);
-        else
-        {
         mpz_sub_ui(variable, N, 1); // p-1
         mpz_urandomm(variable,  state,  variable); // from 0 to p-2 
         mpz_add_ui(variable,  variable,  1); // from 1 to p-1
-        }
         // Fermat's theorem
         mpz_powm(variable1, variable, localN1, N);
         //

@@ -66,7 +66,7 @@ void stack::gen_prime()
     {
         cout<<"Enter name(path) of file or \'-\' to read options from console:";
         cin>>str;
-        if (strcmp(str, "-") == 0)  
+        if (strcmp(str, "-") != 0)  
         {
             ifstream IN(str, ifstream::in);
             if (IN.is_open())
