@@ -3,7 +3,6 @@ CC=g++ -Wall -Wextra
 FLAGS=-lgmp -lgmpxx -std=c99
 BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack $(BuildDir)/gen_prime $(BuildDir)/ord $(BuildDir)/KP
 SrcDir = ./src
-ResDir = ../build
 IncludeDir = ./include
 BuildDir = ./build
 Algos = ./src/gen_prime.cpp ./src/ord.cpp
@@ -26,7 +25,7 @@ algos: $(Algos)
 	$(CC) $(SrcDir)/KP.cpp -c -o $(BuildDir)/KP
     
 clean:
-	rm -rf $(FILES)
+	rm -rf $(BuildFILES)
     
 start: result_win.exe
 	result_win.exe

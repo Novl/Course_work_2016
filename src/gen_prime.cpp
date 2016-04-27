@@ -3,76 +3,95 @@
 
 // !!!!! THE FIRST PRIME SHOULD be '2' !!!!!
 
+const int MAX_TRIES = 10;
+
 void stack::gen_prime()
 {
     ofstream REPORT("report.txt", ofstream::out);
+    time_t TIMER, TIMER1, rawtime;
+    struct tm * timeinfo;
+    
     int mytestlocale = 0;
-	long long i, j, number = 0, MAX_DEG = 0, MIN_DEG = 0, all = 0;
-    time_t TIMER;
-    int MaxNumberOfPrimes = 10000, NumberOfPrimes;
-	mpz_t primes[MaxNumberOfPrimes];
+	int i, j;
+    int number = 0, MAX_DEG = 0, MIN_DEG = 0, all = 0;
+    int MaxNumberOfPrimes = 10000, NumberOfPrimes = 0;
 	int degs[MaxNumberOfPrimes];
     int DoneProgress;
-	mpz_t now;
+    
+    mpz_t primes[MaxNumberOfPrimes];
+	mpz_t now; // assumed prime
 	mpz_t mult;
     mpz_t variableForRoot;
+    mpf_t total_amount, prime_amount, prime_amount_probabilty_test;
+    mpf_t percent;
+     
 	mpz_init(now);
 	mpz_init(mult);
     mpz_init(variableForRoot);
-    mpf_t total_amount, prime_amount, prime_amount_probabilty_test;
     mpf_init_set_ui(total_amount, 0);
     mpf_init_set_ui(prime_amount, 0);
     mpf_init_set_ui(prime_amount_probabilty_test, 0);
-    
-    mpf_t percent;
     mpf_init(percent);
+   
+    
 	char str[250];
 	string s;
 
-	FILE *f1;
-// reading basic using primes 
-    cout<<"Enter name of file or '-' to read default 'primes.txt':";
-    scanf("%s",str);
-    if (strcmp(str, "-") == 0) 
-        strcpy(str, "primes.txt\0");
-    f1 = fopen(str, "r");
-
-    mpz_init(primes[0]);
-	for (i = 0; i < 10000  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
-    {
-        mpz_init(primes[i+1]);
-    }
-    NumberOfPrimes = i;
-    cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
-    REPORT<<"Number of readed primes:"<<NumberOfPrimes<<endl;
-	fclose(f1);
 	
-    
-	printf("Enter name(path) of file or \'-\' to read options from console:");
-	scanf("%s",str);
-	if (str[0] != '-' ) 
+// reading basic using primes 
     {
-        ifstream IN(str);
-        if (IN.is_open())
-            IN>>number>>MAX_DEG>>MIN_DEG>>all;
-        IN.close();
+        FILE *f1;
+        cout<<"Enter name of file or '-' to read default 'primes.txt':";
+        cin>>str;
+        if (strcmp(str, "-") == 0) 
+            strcpy(str, "primes.txt\0");
+        f1 = fopen(str, "r");
+
+        mpz_init(primes[0]);
+        for (i = 0; i < 10000  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
+        {
+            mpz_init(primes[i+1]);
+        }
+        
+        NumberOfPrimes = i;
+        cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
+        REPORT<<"Number of readed primes:"<<NumberOfPrimes<<endl;
+        fclose(f1);
     }
-    else
+	
+// reading parametrs:
+// number - amount of using primes
+// MAX_DEG, MIN_DEG,
+// all - parametr for specific output
     {
-        cout<<"Enter number of using primes: ";
-        cin>>number;
-        cout<<"Enter MAX_DEG: ";
-        cin>>MAX_DEG;
-        cout<<"Enter MIN_DEG: ";
-        cin>>MIN_DEG;
-        cout<<"///////////////////////////////"<<endl;
-        cout<<"Enter \'3\' to see all checked numbers with options\n";
-        cout<<"Enter \'2\' all checked numbers with decomposition and storing\n";
-        cout<<"Enter \'1\' to see only primes\n";
-        cout<<"Enter \'0\' to see only amount\n";
-        cin>>all;
+        cout<<"Enter name(path) of file or \'-\' to read options from console:";
+        cin>>str;
+        if (strcmp(str, "-") == 0)  
+        {
+            ifstream IN(str, ifstream::in);
+            if (IN.is_open())
+                IN>>number>>MAX_DEG>>MIN_DEG>>all;
+            IN.close();
+        }
+        else
+        {
+            cout<<"Enter number of using primes: ";
+            cin>>number;
+            cout<<"Enter MAX_DEG: ";
+            cin>>MAX_DEG;
+            cout<<"Enter MIN_DEG: ";
+            cin>>MIN_DEG;
+            cout<<"///////////////////////////////"<<endl;
+            cout<<"Enter \'3\' to see all checked numbers with options\n";
+            cout<<"Enter \'2\' all checked numbers with decomposition and storing\n";
+            cout<<"Enter \'1\' to see only primes with roots(without storing and pauses)\n";
+            cout<<"Enter \'0\' to see only amount\n";
+            cin>>all;
+        }
     }
-    
+ 
+
+// check 
     if (MIN_DEG > MAX_DEG) 
         MAX_DEG = MIN_DEG;
     if (number > NumberOfPrimes)
@@ -81,31 +100,34 @@ void stack::gen_prime()
         number = NumberOfPrimes;
     }
     
-	printf("Entered number of using primes : %I64d\n", number);
-	printf("Entered MAX_DEG : %I64d\n", MAX_DEG);
-	printf("Entered MIN_DEG : %I64d\n", MIN_DEG);
+// printing out
+	cout<<"Entered number of using primes :"<<number<<endl;
+	cout<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
+	cout<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
 	cout<<endl;
     
     REPORT<<"Entered number of using primes :"<<number<<endl;
 	REPORT<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
 	REPORT<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
+    REPORT<<endl;
     
-	for (i = 0; i < number;  ++i) 
-        degs[i] = MIN_DEG;	
-    j = 0;
-    
- //  GENERATION
-    DoneProgress = 1;
-    TIMER = clock();
-    if (all == 0)
+// initialization
     {
-        time_t rawtime;
-        struct tm * timeinfo;
-        time (&rawtime);
-        timeinfo = localtime (&rawtime);
-        cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        for (i = 0; i < number;  ++i) 
+            degs[i] = MIN_DEG;	
+        j = 0;
+        DoneProgress = 1;
+        TIMER = clock();
+        
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
         REPORT<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        if (all >= 0)
+        {
+            cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;   
+        }
     }
+ //  GENERATION
 	while (j < number)
 	{
 		j=0;
@@ -114,16 +136,14 @@ void stack::gen_prime()
 			degs[j] = MIN_DEG;
 			++j;
 		}
-        if (all == 0 && j == DoneProgress)
+        if (all >= 0 && j == DoneProgress)
         {
-            time_t rawtime;
-            struct tm * timeinfo;
-            time (&rawtime);
-            timeinfo = localtime (&rawtime);
+            time(&rawtime);
+            timeinfo = localtime(&rawtime);
             cout<<"# "<<100*(float)DoneProgress/number<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
             REPORT<<"# "<<100*(float)DoneProgress/number<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
             
-            time_t TIMER1 = clock() - TIMER;
+            TIMER1 = clock() - TIMER;
             TIMER1 = TIMER1/CLOCKS_PER_SEC;
             cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
             REPORT<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
@@ -143,7 +163,7 @@ void stack::gen_prime()
 		{
             mpf_add_ui(total_amount, total_amount, 1);
 			++(degs[j]);
-			// making number
+			// making new number
             mpz_set_ui(now, 1);
 			for (i = 0; i < number; ++i)
                 if (degs[i] != 0)
@@ -154,66 +174,82 @@ void stack::gen_prime()
 			mpz_add_ui(now, now, 1);
 			if (all >= 2) 
 			{
-				cout<<"Testing for prime:"<<endl<<now<<endl;
+				cout<<"Testing for prime: "<<now<<endl;
+                REPORT<<"Testing for prime: "<<now<<endl;
 			}
-			// done
+			// done N = now
             
 			int t = mpz_probab_prime_p(now, 25);
             
             if (t == 2) 
             {
+                REPORT<<"Definitely prime by GMP prob test"<<endl;
                 if (all >= 2)
                 {
                     cout<<"Definitely prime by GMP prob test"<<endl;
-                    REPORT<<"Definitely prime by GMP prob test"<<endl;
                 }
             }
             else
             if (t == 1) 
             {
                 mpf_add_ui(prime_amount_probabilty_test, prime_amount_probabilty_test, 1);
-                if (this->root(variableForRoot, 50, now, number, primes, degs))
+                if (this->root(variableForRoot, MAX_TRIES, now, number, primes, degs))
                 {
                     //comment HERE
                     mpf_add_ui(prime_amount, prime_amount, 1);
+                    REPORT<<"DEGS:"<<endl;
+                    for (i = 0; i < number; ++i) 
+                    {
+                        if (degs[i] > 0)
+                            REPORT<<primes[i]<<" - "<<degs[i]<<endl;
+                    }
+                    REPORT<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
+                    REPORT<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;
+                    
                     if (all >= 2)
                     {
-                        printf("DEGS:\n");
+                        cout<<"DEGS:"<<endl;
                         for (i = 0; i < number; ++i) 
                         {
-                            gmp_printf("%Zd - %d\n", primes[i], degs[i]);
-                            REPORT<<primes[i]<<" - "<<degs[i]<<endl;
+                            if (degs[i] > 0)
+                                cout<<primes[i]<<" - "<<degs[i]<<endl;
                         }
-                        printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now, 10));
-                        printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now, 2));
-                        REPORT<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
-                        REPORT<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;
+                        cout<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
+                        cout<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;
                     }
-                    if (all >= 1)
+                    
+                    REPORT<<"Primitive root: "<<variableForRoot<<endl<<endl;
+                    
+                    if (all == 1)
                     {
                         cout<<now<<endl;
                         cout<<"Primitive root:"<<variableForRoot<<endl;
-                        REPORT<<now<<endl;
-                        REPORT<<"Primitive root:"<<variableForRoot<<endl;
-                        if (mpz_cmp_ui(variableForRoot, 1) == 0)
-                        {
-                            cout<<endl;
-                            cout<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-                            cout<<endl;
-                           
-                            REPORT<<endl;
-                            REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-                            REPORT<<endl;
-                            
-                            mytestlocale = 1;
-                        }
                     }
+                    if (mpz_cmp_ui(variableForRoot, 1) == 0)
+                    {
+                        cout<<endl;
+                        cout<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                        cout<<endl;
+                       
+                        REPORT<<endl;
+                        REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                        REPORT<<endl;
+                        
+                        mytestlocale = 1;
+                    }
+                    
                     
                     if (all >= 3)
                     {
-                        this->add(now);
-                        this->add(variableForRoot);
-                        cout<<"New root and number in stack"<<endl;
+                        cout<<"Enter 's' to store new number and root"<<endl;
+                        cin>>s;
+                        if (s.compare("s") == 0)
+                        {
+                            this->add(now);
+                            this->add(variableForRoot);    
+                            cout<<"New root and number in stack"<<endl;
+                        }
+                        
                         cout<<"Enter kp to seed result of Konyagin-Pomerance test"<<endl;
                         cin>>s;
                         if (s.compare("kp") == 0) 
@@ -238,11 +274,14 @@ void stack::gen_prime()
                     }
                 }   
                 else
+                {
+                    REPORT<<"Didn't find primitive root"<<endl;
                     if (all >= 2)
                     {
                         printf("Didn't find primive root\n");
-                        REPORT<<"Didn't find primitive root"<<endl;
+                        
                     }
+                }
             }
             else
                 if (all >= 2)
@@ -253,9 +292,10 @@ void stack::gen_prime()
  		}
 	}
     END:
-    printf("\nEnd of generation\n");
+    cout<<endl<<"End of generation"<<endl;
     REPORT<<endl<<"End of generation"<<endl;
-    if (all == 0)
+    
+    if (all >= 0)
     {
         time_t rawtime;
         struct tm * timeinfo;
@@ -264,8 +304,12 @@ void stack::gen_prime()
         cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
         REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
+    
     cout<<"Number of primes:"<<prime_amount<<endl;
     cout<<"Total:"<<total_amount<<endl;
+    
+    REPORT<<"Number of primes:"<<prime_amount<<endl;
+    REPORT<<"Total:"<<total_amount<<endl;
     
     if (mpf_cmp_ui(total_amount, 0) > 0)
     {
@@ -289,6 +333,7 @@ void stack::gen_prime()
     mpf_clear(percent);
 	mpz_clear(now);
 	mpz_clear(mult);
+    mpz_clear(variableForRoot);
     mpf_clear(total_amount);
     mpf_clear(prime_amount);
     mpf_clear(prime_amount_probabilty_test);

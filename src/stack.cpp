@@ -446,14 +446,6 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
             mpz_clear(ordA);
             mpz_set(uns, variable1);
         }
-        /*
-        else
-        {
-            gmp_printf("%Zd is not primitive root\n", variable);
-            if (FLAG == 1)
-                getchar();
-        }
-        */
         ++R;
     }
     mpz_clear(variable1);
