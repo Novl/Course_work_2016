@@ -5,8 +5,9 @@
 
 void stack::gen_prime()
 {
+    ofstream REPORT("report.txt", ofstream::out);
     int mytestlocale = 0;
-	long long i, j, number, MAX_DEG, MIN_DEG, all;
+	long long i, j, number = 0, MAX_DEG = 0, MIN_DEG = 0, all = 0;
     time_t TIMER;
     int MaxNumberOfPrimes = 10000, NumberOfPrimes;
 	mpz_t primes[MaxNumberOfPrimes];
@@ -23,6 +24,8 @@ void stack::gen_prime()
     mpf_init_set_ui(prime_amount, 0);
     mpf_init_set_ui(prime_amount_probabilty_test, 0);
     
+    mpf_t percent;
+    mpf_init(percent);
 	char str[250];
 	string s;
 
@@ -41,6 +44,7 @@ void stack::gen_prime()
     }
     NumberOfPrimes = i;
     cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
+    REPORT<<"Number of readed primes:"<<NumberOfPrimes<<endl;
 	fclose(f1);
 	
     
@@ -82,6 +86,10 @@ void stack::gen_prime()
 	printf("Entered MIN_DEG : %I64d\n", MIN_DEG);
 	cout<<endl;
     
+    REPORT<<"Entered number of using primes :"<<number<<endl;
+	REPORT<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
+	REPORT<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
+    
 	for (i = 0; i < number;  ++i) 
         degs[i] = MIN_DEG;	
     j = 0;
@@ -96,6 +104,7 @@ void stack::gen_prime()
         time (&rawtime);
         timeinfo = localtime (&rawtime);
         cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        REPORT<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
 	while (j < number)
 	{
@@ -112,10 +121,21 @@ void stack::gen_prime()
             time (&rawtime);
             timeinfo = localtime (&rawtime);
             cout<<"# "<<100*(float)DoneProgress/number<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+            REPORT<<"# "<<100*(float)DoneProgress/number<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+            
             time_t TIMER1 = clock() - TIMER;
             TIMER1 = TIMER1/CLOCKS_PER_SEC;
             cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
-    
+            REPORT<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+            
+            mpf_div(percent, prime_amount, total_amount);
+            cout<<"Percent of found:"<<percent<<endl;
+            REPORT<<"Percent of found:"<<percent<<endl;
+            
+            mpf_div(percent, prime_amount_probabilty_test, total_amount);
+            cout<<"Percent of probable:"<<percent<<endl;
+            REPORT<<"Percent of probable:"<<percent<<endl;
+            
             ++DoneProgress;
         }
         
@@ -143,7 +163,10 @@ void stack::gen_prime()
             if (t == 2) 
             {
                 if (all >= 2)
+                {
                     cout<<"Definitely prime by GMP prob test"<<endl;
+                    REPORT<<"Definitely prime by GMP prob test"<<endl;
+                }
             }
             else
             if (t == 1) 
@@ -157,20 +180,31 @@ void stack::gen_prime()
                     {
                         printf("DEGS:\n");
                         for (i = 0; i < number; ++i) 
-                        gmp_printf("%Zd - %d\n", primes[i], degs[i]);
-                        printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now,10));
-                        printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now,2));
+                        {
+                            gmp_printf("%Zd - %d\n", primes[i], degs[i]);
+                            REPORT<<primes[i]<<" - "<<degs[i]<<endl;
+                        }
+                        printf("Digits(base = 10) = %d\n", mpz_sizeinbase(now, 10));
+                        printf("Digits(base = 2) = %d\n", mpz_sizeinbase(now, 2));
+                        REPORT<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
+                        REPORT<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;
                     }
                     if (all >= 1)
                     {
                         cout<<now<<endl;
-                        cout<<"Primitive root:"<<variableForRoot<<endl;;
+                        cout<<"Primitive root:"<<variableForRoot<<endl;
+                        REPORT<<now<<endl;
+                        REPORT<<"Primitive root:"<<variableForRoot<<endl;
                         if (mpz_cmp_ui(variableForRoot, 1) == 0)
                         {
                             cout<<endl;
                             cout<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
                             cout<<endl;
                            
+                            REPORT<<endl;
+                            REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                            REPORT<<endl;
+                            
                             mytestlocale = 1;
                         }
                     }
@@ -182,7 +216,19 @@ void stack::gen_prime()
                         cout<<"New root and number in stack"<<endl;
                         cout<<"Enter kp to seed result of Konyagin-Pomerance test"<<endl;
                         cin>>s;
-                        if (s.compare("kp") == 0) KP(now, number, primes, degs);
+                        if (s.compare("kp") == 0) 
+                        {
+                            if (KP(now, number, primes, degs))
+                            {
+                                cout<<"KP-prime"<<endl;
+                                REPORT<<"KP-prime"<<endl;
+                            }
+                            else
+                            {
+                                cout<<"KP-composite"<<endl;
+                                REPORT<<"KP-composite"<<endl;   
+                            }
+                        }
                     }
                     if (all >= 2)
                     {
@@ -193,15 +239,22 @@ void stack::gen_prime()
                 }   
                 else
                     if (all >= 2)
+                    {
                         printf("Didn't find primive root\n");
+                        REPORT<<"Didn't find primitive root"<<endl;
+                    }
             }
             else
                 if (all >= 2)
+                {
                     cout<<"Definitely composite"<<endl;
+                    REPORT<<"Definitely composite"<<endl;
+                }
  		}
 	}
     END:
     printf("\nEnd of generation\n");
+    REPORT<<endl<<"End of generation"<<endl;
     if (all == 0)
     {
         time_t rawtime;
@@ -209,23 +262,29 @@ void stack::gen_prime()
         time (&rawtime);
         timeinfo = localtime (&rawtime);
         cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
     cout<<"Number of primes:"<<prime_amount<<endl;
     cout<<"Total:"<<total_amount<<endl;
-    mpf_t percent;
-    mpf_init(percent);
+    
     if (mpf_cmp_ui(total_amount, 0) > 0)
     {
         mpf_div(percent, prime_amount, total_amount);
         cout<<"Percent of found:"<<percent<<endl;
+        REPORT<<"Percent of found:"<<percent<<endl;
         mpf_div(percent, prime_amount_probabilty_test, total_amount);
         cout<<"Percent of probable:"<<percent<<endl;
+        REPORT<<"Percent of probable:"<<percent<<endl;
     }
     
     TIMER = clock() - TIMER;
     cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
     cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
     cout<<"mytestlocale = "<<mytestlocale<<endl;
+    REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    REPORT<<"mytestlocale = "<<mytestlocale<<endl;
+    
     
     mpf_clear(percent);
 	mpz_clear(now);
@@ -235,4 +294,5 @@ void stack::gen_prime()
     mpf_clear(prime_amount_probabilty_test);
     for (i = 0; i <= NumberOfPrimes ; ++i) 
         mpz_clear(primes[i]);
+    REPORT.close();
 }

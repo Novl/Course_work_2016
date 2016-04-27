@@ -81,10 +81,11 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     mpz_clear(KProot);
     for (i = 0; i <= NumberOfPrimes; ++i)
         mpz_clear(primes[i]);
-    
+    /*
     if (uns)
         cout<<"KP-prime"<<endl;
     else
         cout<<"KP-composite"<<endl;
+    */
     return uns;
 }
