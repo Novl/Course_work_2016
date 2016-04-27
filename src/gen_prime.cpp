@@ -70,17 +70,17 @@ void stack::gen_prime()
         {
             ifstream IN(str, ifstream::in);
             if (IN.is_open())
-                IN>>number>>MAX_DEG>>MIN_DEG>>all;
+                IN>>number>>MIN_DEG>>MAX_DEG>>all;
             IN.close();
         }
         else
         {
             cout<<"Enter number of using primes: ";
             cin>>number;
-            cout<<"Enter MAX_DEG: ";
-            cin>>MAX_DEG;
             cout<<"Enter MIN_DEG: ";
             cin>>MIN_DEG;
+            cout<<"Enter MAX_DEG: ";
+            cin>>MAX_DEG;
             cout<<"///////////////////////////////"<<endl;
             cout<<"Enter \'3\' to see all checked numbers with options\n";
             cout<<"Enter \'2\' all checked numbers with decomposition and storing\n";
@@ -102,13 +102,13 @@ void stack::gen_prime()
     
 // printing out
 	cout<<"Entered number of using primes :"<<number<<endl;
-	cout<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
 	cout<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
+    cout<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
 	cout<<endl;
     
     REPORT<<"Entered number of using primes :"<<number<<endl;
-	REPORT<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
 	REPORT<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
+    REPORT<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
     REPORT<<endl;
     
 // initialization
