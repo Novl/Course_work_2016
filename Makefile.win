@@ -7,10 +7,10 @@ IncludeDir = ./include
 BuildDir = ./build
 Algos = ./src/gen_prime.cpp ./src/ord.cpp
 
-result: source algos $(BuildFILES)
+result: dir source menu stack algos $(BuildFILES)
 	$(CC) $(BuildFILES) $(FLAGS) -o result_win
 
-source: $(SrcDir)/Source.cpp menu  stack
+source: $(SrcDir)/Source.cpp
 	$(CC) $(SrcDir)/Source.cpp -c -o $(BuildDir)/Source
 
 menu: $(SrcDir)/menu.cpp $(IncludeDir)/menu.h $(IncludeDir)/headers.h
@@ -23,6 +23,8 @@ algos: $(Algos)
 	$(CC) $(SrcDir)/gen_prime.cpp -c -o $(BuildDir)/gen_prime
 	$(CC) $(SrcDir)/ord.cpp -c -o $(BuildDir)/ord
 	$(CC) $(SrcDir)/KP.cpp -c -o $(BuildDir)/KP
+dir:
+	mkdir $(BuildDir)
     
 clean:
 	rm -rf $(BuildFILES)
