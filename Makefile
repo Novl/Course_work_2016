@@ -5,7 +5,7 @@ BuildFILES = $(BuildDir)/Source $(BuildDir)/menu $(BuildDir)/stack $(BuildDir)/g
 SrcDir = ./src
 IncludeDir = ./include
 BuildDir = ./build
-Algos = ./src/gen_prime.cpp ./src/ord.cpp
+Algos = $(SrcDir)/gen_prime.cpp $(SrcDir)/ord.cpp $(SrcDir)/KP.cpp
 
 result: dir source menu stack algos $(BuildFILES)
 	$(CC) $(BuildFILES) $(FLAGS) -o result_win
@@ -23,11 +23,14 @@ algos: $(Algos)
 	$(CC) $(SrcDir)/gen_prime.cpp -c -o $(BuildDir)/gen_prime
 	$(CC) $(SrcDir)/ord.cpp -c -o $(BuildDir)/ord
 	$(CC) $(SrcDir)/KP.cpp -c -o $(BuildDir)/KP
+
 dir:
-	mkdir $(BuildDir)
-    
+	@if [ ! -d $(BuildDir) ] ; then echo "MKDIR" ; mkdir $(BuildDir); fi
+#	$(if [! -d $(BuildDir)], mkdir $(BuildDir), )
+#	-mkdir $(BuildDir)
+	
 clean:
 	rm -rf $(BuildFILES)
     
-start: result_win.exe
-	result_win.exe
+start: result_win
+	result_win
