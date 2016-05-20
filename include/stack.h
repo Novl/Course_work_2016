@@ -3,7 +3,7 @@
 
 #include "../include/headers.h"
 
-const int SIZE_STACK=400;
+const int SIZE_STACK=400000;
 const int NUM_DIV_1=200;
 const int NUM_DIV_2=100;
 
@@ -42,6 +42,7 @@ class stack
     bool root(mpz_t, const int, const mpz_t, const int, const mpz_t*,const int* );
     void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_prime();
+    void gen_primes_file();
     bool KP(const mpz_t, const int, const mpz_t*, const int*);
 };
 #endif

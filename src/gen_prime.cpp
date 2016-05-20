@@ -11,10 +11,10 @@ void stack::gen_prime()
     time_t TIMER, TIMER1, rawtime;
     struct tm * timeinfo;
     
-    int mytestlocale = 0;
+    int ERRORlocale = 0;
 	int i, j;
     int number = 0, MAX_DEG = 0, MIN_DEG = 0, all = 0;
-    int MaxNumberOfPrimes = 10000, NumberOfPrimes = 0;
+    int MaxNumberOfPrimes = 500000, NumberOfPrimes = 0;
 	int degs[MaxNumberOfPrimes];
     int DoneProgress;
     
@@ -46,9 +46,14 @@ void stack::gen_prime()
         if (strcmp(str, "-") == 0) 
             strcpy(str, "primes.txt\0");
         f1 = fopen(str, "r");
-
+        if (f1 == NULL) 
+        {
+            cout<<"No such file"<<endl;
+            return;
+        }
+        
         mpz_init(primes[0]);
-        for (i = 0; i < 10000  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
+        for (i = 0; i < MaxNumberOfPrimes  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
         {
             mpz_init(primes[i+1]);
         }
@@ -235,7 +240,7 @@ void stack::gen_prime()
                         REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
                         REPORT<<endl;
                         
-                        mytestlocale = 1;
+                        ERRORlocale = 1;
                     }
                     
                     
@@ -324,10 +329,10 @@ void stack::gen_prime()
     TIMER = clock() - TIMER;
     cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
     cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
-    cout<<"mytestlocale = "<<mytestlocale<<endl;
+    cout<<"ERRORlocale = "<<ERRORlocale<<endl;
     REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
     REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
-    REPORT<<"mytestlocale = "<<mytestlocale<<endl;
+    REPORT<<"ERRORlocale = "<<ERRORlocale<<endl;
     
     
     mpf_clear(percent);
@@ -340,4 +345,204 @@ void stack::gen_prime()
     for (i = 0; i <= NumberOfPrimes ; ++i) 
         mpz_clear(primes[i]);
     REPORT.close();
+}
+
+void stack::gen_primes_file()
+{
+    ofstream REPORT("report.txt", ofstream::out);
+    ofstream GENERATED("generatedPrimes.txt", ofstream::app);
+    time_t TIMER, TIMER1, rawtime;
+    struct tm * timeinfo;
+    
+    int amount;
+    unsigned int size_bits;
+    int ERRORlocale = 0;
+	int i, j, t, flag;
+    int number = 0;
+    int MaxNumberOfPrimes = 100000, NumberOfPrimes = 0;
+	int* degs = (int*)calloc(MaxNumberOfPrimes, sizeof(int));
+    int DoneProgress = 0;
+    
+    mpz_t* primesBase = (mpz_t*)calloc(MaxNumberOfPrimes, sizeof(mpz_t));
+    mpz_t primesUsed[MaxNumberOfPrimes];
+	mpz_t now; // assumed prime
+    mpz_t variableForRoot;
+     
+	mpz_init(now);
+    mpz_init(variableForRoot);   
+    
+	char str[250];
+	
+    cout<<"Enter number of primes:";
+    cin>>amount;
+    cout<<"Enter the min number of bits in numbers:";
+    cin>>size_bits;
+    
+// reading basic using primes 
+    {
+        FILE *f1;
+        strcpy(str, "primes.txt\0");
+        f1 = fopen(str, "r");
+        if (f1 == NULL) 
+        {
+            cout<<"No such file"<<endl;
+            return;
+        }
+        
+        mpz_init(primesBase[0]);
+        mpz_init(primesUsed[0]);
+        for (i = 0; i < MaxNumberOfPrimes  && gmp_fscanf(f1,"%Zd\n", primesBase[i]) > 0 ; ++i) 
+        {
+            mpz_init(primesBase[i+1]);
+            mpz_init(primesUsed[i+1]);
+        }
+        NumberOfPrimes = i;
+        fclose(f1);
+    }
+	
+// initialization
+    {
+    TIMER = clock();
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    REPORT<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    }
+ //  GENERATION
+    while (DoneProgress < amount)
+    {
+        j = 0;
+        mpz_set_ui(now, 2);
+        while (mpz_sizeinbase(now, 2) < size_bits && MaxNumberOfPrimes >  j)
+        {
+            i = rand() % NumberOfPrimes;
+            mpz_set(primesUsed[j], primesBase[i]); 
+            mpz_mul(now, now, primesUsed[j]);
+            degs[j] = 1;
+            ++j;
+        }
+
+        if (j > MaxNumberOfPrimes) return;
+        
+        flag = 0;
+        while (flag == 0 && MaxNumberOfPrimes > j && mpz_sizeinbase(now, 10) < 3000)
+        {
+            mpz_add_ui(now, now, 1);
+            cout<<"Trying:"<<now<<endl;
+            REPORT<<"Trying:"<<now<<endl;
+            t = mpz_probab_prime_p(now, 25);
+            if (t == 2) 
+            {
+                GENERATED<<now<<endl;
+                flag = 1;
+                ++DoneProgress;
+            }
+            else
+            if (t == 1) 
+            {
+                if (this->root(variableForRoot, MAX_TRIES, now, j, primesUsed, degs))
+                {
+                    //comment HERE
+                    GENERATED<<now<<endl;
+                    ++DoneProgress;
+                    flag = 1;
+                    
+                    REPORT<<now<<endl;
+                    REPORT<<"DEGS:"<<endl;
+                    for (i = 0; i < number; ++i) 
+                    {
+                        if (degs[i] > 0)
+                            REPORT<<primesUsed[i]<<" - "<<degs[i]<<endl;
+                    }
+                    REPORT<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
+                    REPORT<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;
+                    REPORT<<"Primitive root: "<<variableForRoot<<endl<<endl;
+                    
+                    if (mpz_cmp_ui(variableForRoot, 1) == 0)
+                    {
+                        cout<<endl;
+                        cout<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                        cout<<endl;
+                       
+                        REPORT<<endl;
+                        REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                        REPORT<<endl;
+                        
+                        ERRORlocale = 1;
+                    }
+                    if (mpz_sizeinbase(now, 10) < 100)
+                    {
+                        if (KP(now, j, primesUsed, degs))
+                        {
+                            REPORT<<"KP-prime"<<endl;
+                        }
+                        else
+                        {
+                            cout<<"KP-composite"<<endl;
+                            ERRORlocale = 1;
+                            REPORT<<"KP-composite"<<endl;   
+                        }
+                    }
+                }   
+                else
+                {
+                    REPORT<<"Didn't find primitive root"<<endl;
+                }
+            }
+            
+            if (flag == 1)
+            {
+                time(&rawtime);
+                timeinfo = localtime(&rawtime);
+                cout<<"# "<<100*(float)DoneProgress/amount<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+                REPORT<<"# "<<100*(float)DoneProgress/amount<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+                
+                TIMER1 = clock() - TIMER;
+                TIMER1 = TIMER1/CLOCKS_PER_SEC;
+                cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+                REPORT<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+               
+                ++DoneProgress;
+            }
+            else
+            {
+                mpz_sub_ui(now, now, 1);
+                i = rand() % NumberOfPrimes;
+                mpz_set(primesUsed[j], primesBase[i]); 
+                mpz_mul(now, now, primesUsed[j]);
+                degs[j] = 1;
+                ++j;
+            }
+ 		}
+	}
+    cout<<endl<<"End of generation"<<endl;
+    REPORT<<endl<<"End of generation"<<endl;
+    
+    {
+        time_t rawtime;
+        struct tm * timeinfo;
+        time (&rawtime);
+        timeinfo = localtime (&rawtime);
+        cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    }
+    
+    TIMER = clock() - TIMER;
+    cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    cout<<"ERRORlocale = "<<ERRORlocale<<endl;
+    REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    REPORT<<"ERRORlocale = "<<ERRORlocale<<endl;
+    
+    free(degs);
+	mpz_clear(now);
+    mpz_clear(variableForRoot);
+    for (i = 0; i <= NumberOfPrimes ; ++i) 
+    {
+        mpz_clear(primesBase[i]);
+        mpz_clear(primesUsed[i]);
+    }
+    REPORT.close();
+    GENERATED.close();
 }

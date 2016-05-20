@@ -3,6 +3,7 @@
 stack::stack()
 {
     this->num = 0;
+    srand(time(NULL));
     mpz_init(variable);
     unsigned long curtime = (unsigned long)time(NULL);
     gmp_randinit_default(state);
@@ -637,6 +638,11 @@ bool stack::isValid(string input)
     if (input.compare("g")==0)
     {
         this->gen_prime();
+    }
+    else
+    if (input.compare("gf")==0)
+    {
+        this->gen_primes_file();
     }
     // else
     // if (input.compare("gl")==0)

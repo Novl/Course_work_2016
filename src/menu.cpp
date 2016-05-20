@@ -18,7 +18,8 @@ void menu()
     printf("\n//-------------------");
 	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
 	printf("\n \'r\' to find primitive root");
-	printf("\n \'g\' to generate \'short\' prime");
+	printf("\n \'g\' to generate primes");
+    printf("\n \'gf\' to generate file with primes(amount, size_bits)");
 	printf("\n");
     
     printf("\n --Op-s with stack");
@@ -45,7 +46,8 @@ void short_menu()
     printf("\n//-------------------");
 	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
 	printf("\n \'r\' to find primitive root");
-	printf("\n \'gs\' to generate \'short\' prime");
+	printf("\n \'g\' to generate primes");
+    printf("\n \'gf\' to generate file with primes(amount, size_bits)");
 	printf("\n");
     
 	printf("\n \'m\' to show this menu");
