@@ -261,21 +261,73 @@ int stack::gmp_test()
 
 
 // with  trial divisions up to 1000000
+bool stack::factorize(const mpz_t N, mpz_t* factors, int& num_factors, int* degs)
+{
+    mpz_t i;
+    mpz_init_set_ui(i, 2);
+    num_factors = 0;
+    mpz_t N1;
+    mpz_init_set(N1, N);
+    
+    while (mpz_cmp_ui(N1, 1) > 0 && mpz_cmp_ui(i, 1000000) < 0 && num_factors < 1000)
+    {
+        if (mpz_divisible_p(N1, i))
+        {
+            mpz_init_set(factors[num_factors], i);
+            degs[num_factors] = 0;
+            while (mpz_divisible_p(N1, i))
+            {
+                mpz_cdiv_q(N1, N1, i);
+                ++degs[num_factors];
+            }
+            ++num_factors;
+        }
+        mpz_add_ui(i, i, 1);
+    }
+    
+    int uns = mpz_cmp_ui(N1, 1);
+    mpz_clear(i);
+    mpz_clear(N1);
+    
+    if (uns == 0)
+        return true;
+    else
+        return false;
+}
+
+void stack::fact()
+{
+    if (!this->is_empty())
+    {
+        mpz_t factors[MAX_FACTORS];
+        int degs[MAX_FACTORS];
+        int num_factors;
+        if (factorize(this->array[this->num-1], factors, num_factors, degs))
+        {
+            cout<<"Factors:"<<endl;
+            for (int i = 0; i < num_factors; ++i)
+                cout<<factors[i]<<" - "<<degs[i]<<endl;
+        }
+        else
+            cout<<"Divisors higher than 1000000"<<endl;
+    }
+}
+
 void stack::root()
 {
     if (this->gmp_test() == 0)
         cout<<"Not exist for not prime"<<endl;
+    else
+    if (this->num == 0)
+    {
+        cout<<"Stack is empty"<<endl;
+    }
     else
     {
         int FLAG = 0;
         cout<<"Enter '1' to see results one by one or '0' to skip"<<endl;
         cin>>FLAG;
         
-        if (this->num == 0)
-        {
-            cout<<"Stack is empty"<<endl;
-        }
-        else
         {
             int num_divisors = 0;
             mpz_t divisors[NUM_DIV_1];
@@ -302,7 +354,7 @@ void stack::root()
             mpz_clear(r);
             //
             
-            int f = 0, R = 0, max_tries = 100;
+            int f = 0, R = 0, max_tries = 20;
             mpz_t variable1;
             mpz_init(variable1);
             mpz_t deg;
@@ -547,11 +599,21 @@ bool stack::isValid(string input)
         this->gmp_test();
     }
     else
+    if (input.compare("f")==0)
+    {
+        this->fact();
+    }
+    else
     // find primitive root
     if (input.compare("r")==0)
     {
         this->root();
-    }		
+    }
+    else
+    if (input.compare("kp")==0)
+    {
+        this->KP();
+    }
     else
     /*
         Показывает разложение числа p-1 на простые числа до 400000 ,

@@ -3,7 +3,7 @@
 
 // !!!!! THE FIRST PRIME SHOULD be '2' !!!!!
 
-const int MAX_TRIES = 10;
+const int MAX_TRIES = 20;
 
 void stack::gen_prime()
 {
@@ -14,7 +14,7 @@ void stack::gen_prime()
     int ERRORlocale = 0;
 	int i, j;
     int number = 0, MAX_DEG = 0, MIN_DEG = 0, all = 0;
-    int MaxNumberOfPrimes = 500000, NumberOfPrimes = 0;
+    int MaxNumberOfPrimes = 100000, NumberOfPrimes = 0;
 	int degs[MaxNumberOfPrimes];
     int DoneProgress;
     
@@ -255,9 +255,9 @@ void stack::gen_prime()
                             cout<<"New root and number in stack"<<endl;
                         }
                         
-                        cout<<"Enter kp to seed result of Konyagin-Pomerance test"<<endl;
+                        cout<<"Enter 'k' to seed result of Konyagin-Pomerance test"<<endl;
                         cin>>s;
-                        if (s.compare("kp") == 0) 
+                        if (s.compare("k") == 0) 
                         {
                             if (KP(now, number, primes, degs))
                             {

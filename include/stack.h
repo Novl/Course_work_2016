@@ -3,9 +3,10 @@
 
 #include "../include/headers.h"
 
-const int SIZE_STACK=400000;
-const int NUM_DIV_1=200;
-const int NUM_DIV_2=100;
+const int SIZE_STACK = 400000;
+const int NUM_DIV_1 = 200;
+const int NUM_DIV_2 = 100;
+const int MAX_FACTORS = 1000;
 
 class stack
 {
@@ -38,11 +39,15 @@ class stack
     void cdiv();
     void powm();
     int gmp_test();
+    void fact();
+    bool factorize(const mpz_t, mpz_t*, int&, int*);
     void root();
     bool root(mpz_t, const int, const mpz_t, const int, const mpz_t*,const int* );
     void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_prime();
     void gen_primes_file();
+    void KP();
+    bool KP(const mpz_t);
     bool KP(const mpz_t, const int, const mpz_t*, const int*);
 };
 #endif

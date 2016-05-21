@@ -17,7 +17,9 @@ void menu()
     printf("\n --Miscellaneous");
     printf("\n//-------------------");
 	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
+    printf("\n \'f\' to factorize");
 	printf("\n \'r\' to find primitive root");
+    printf("\n \'kp\' to check Konyagin-Pomerance test");
 	printf("\n \'g\' to generate primes");
     printf("\n \'gf\' to generate file with primes(amount, size_bits)");
 	printf("\n");
@@ -45,7 +47,9 @@ void short_menu()
     printf("\n --Miscellaneous");
     printf("\n//-------------------");
 	printf("\n \'gmptp\' to check is top(last) number prime by probability test by GMPLIB");
+    printf("\n \'f\' to factorize");
 	printf("\n \'r\' to find primitive root");
+    printf("\n \'kp\' to check Konyagin-Pomerance test");
 	printf("\n \'g\' to generate primes");
     printf("\n \'gf\' to generate file with primes(amount, size_bits)");
 	printf("\n");

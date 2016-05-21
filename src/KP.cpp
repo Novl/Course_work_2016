@@ -1,6 +1,7 @@
 #include "../include/stack.h"
 
 // Algorithm  Konyagin-Pomerance for factorization
+// returns 'true' if N is prime, 'false' if composite
 
 bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, const int* degs)
 {
@@ -36,20 +37,22 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     mpz_t KPord;
     mpz_init(KPord);
     mpz_t KPgcd;
-    mpz_init(KPgcd);
+    mpz_init_set_ui(KPgcd, 1);
     mpz_t KProot;
     mpz_init(KProot);
     mpz_root(KProot, N, 2);
+    cout<<"KProot = "<<KProot<<endl;
     
     // a ::= primes[step]
     while (mpz_cmp(up, primes[step]) >= 0)
     {
+        cout<<"a = "<<primes[step]<<endl;
         mpz_powm(KPvariable, primes[step], F, N);
         cout<<"a ^ F:"<<KPvariable<<endl;
         if (mpz_cmp_ui(KPvariable, 1) == 0) goto NEXT;
         mpz_sub_ui(KPvariable, N, 1);
         mpz_powm(KPvariable1, primes[step], KPvariable, N);
-        cout<<"a ^ N:"<<KPvariable<<endl;
+        cout<<"a ^ (N-1):"<<KPvariable1<<endl;
         if (mpz_cmp_ui(KPvariable1, 1) != 0) goto NO;
         
         this->ord(KPord, primes[step], N, num_divisors, divisors, degs);
@@ -59,10 +62,15 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
             {
                 mpz_cdiv_q(KPvariable, KPord, divisors[i]);
                 mpz_powm(KPvariable1, primes[step], KPvariable, N);
-                mpz_gcd(KPgcd, KPvariable1, N);
-                if (mpz_cmp_ui(KPgcd, 1) > 0) goto NO;
+                mpz_sub_ui(KPvariable1, KPvariable1, 1);
+                mpz_mul(KPgcd, KPgcd, KPvariable1);
+                mpz_mod(KPgcd, KPgcd, N);
             }
+        mpz_gcd(KPgcd, KPvariable1, N);
+        if (mpz_cmp_ui(KPgcd, 1) > 0) goto NO;
         mpz_lcm(KPvariable, F, KPord);
+        cout<<"F = "<<F<<endl;
+        cout<<"lcm(НОК) = "<<KPvariable<<endl;
         mpz_set(F, KPvariable);
         if (mpz_cmp(F, KProot) >= 0) goto YES;
         NEXT:++step;
@@ -88,4 +96,36 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
         cout<<"KP-composite"<<endl;
     */
     return uns;
+}
+
+bool stack::KP(const mpz_t N)
+{
+    mpz_t factors[MAX_FACTORS];
+    int degs[MAX_FACTORS];
+    int num_factors;
+    mpz_t N1;
+    mpz_init(N1);
+    mpz_sub_ui(N1, N, 1);
+    
+    if (factorize(N1, factors, num_factors, degs))
+        {
+            cout<<N<<endl;
+            bool uns = KP(N, num_factors, factors, degs);
+            if (uns)
+                cout<<"KP-prime"<<endl;
+            else
+                cout<<"KP-composite"<<endl;
+            return uns;
+        }
+        else
+            cout<<"Divisors N-1 higher than 1000000"<<endl;
+    return false;
+}
+
+void stack::KP()
+{
+    if (!this->is_empty())
+    {
+        this->KP(this->array[this->num-1]);
+    }
 }
