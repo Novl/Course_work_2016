@@ -259,7 +259,7 @@ void stack::gen_prime()
                         
                         cout<<"Enter 'k' to seed result of Konyagin-Pomerance test"<<endl;
                         cin>>s;
-                        if (s.compare("k") == 0) 
+                        if (s.compare("k") == 0 && mpz_sizeinbase(now, 10) < 100) 
                         {
                             if (KP(now, number, primes, degs))
                             {

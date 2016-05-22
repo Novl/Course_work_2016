@@ -411,8 +411,11 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
     for (int i = 0; i < num_divisors; ++i)
         mpz_init_set_ui(roots[i], 0);
     
+    //cout<<"num_d : "<<num_divisors<<endl;
     while (f != 1 && R < max_tries)
     {
+        //cout<<"R = "<<R<<endl;
+        //cout<<"fr = "<<found_roots<<endl;
         f = 1;
         // set 'variable' as a possible root
         mpz_sub_ui(variable, N, 1); // p-1
@@ -421,9 +424,11 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
         // Fermat's theorem
         mpz_powm(variable1, variable, localN1, N);
         //
+        //cout<<"root: "<<variable<<endl;
         if (mpz_cmp_ui(variable1, 1) == 0)
             while (found_roots < num_divisors && f)
             {	
+                //cout<<"fr = "<<found_roots<<endl;
                 if (degs[found_roots] != 0)
                 {
                     mpz_cdiv_q(degree,  localN1, divisors[found_roots]);
@@ -443,15 +448,19 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
             return false;
         }
         //
+        //cout<<"fr = "<<found_roots<<endl;
+        //cout<<"f = "<<f<<endl;
         if (found_roots == num_divisors)
         {
+            //cout<<"MAKING"<<endl;
             // making root
             mpz_set_ui(variable, 1);
             mpz_t ordA;
             mpz_init(ordA);
             for (int i = 0; i < num_divisors; ++i)
             {
-                if (degs[i] > 0)
+                //cout<<"MAKING:"<<i<<endl;
+                if (degs[i] > 0 && (i > 0 ? mpz_cmp(roots[i], roots[i-1]) != 0: true))
                 {
                     ord(ordA, roots[i], N, num_divisors, divisors, degs);
                     mpz_set(degree, ordA);
