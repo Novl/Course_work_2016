@@ -657,6 +657,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                     //comment HERE
                     GENERATED<<now<<endl;
                     mpf_add_ui(prime_amount, prime_amount, 1);
+                    REPORT<<now<<endl;
                     REPORT<<"DEGS:"<<endl;
                     for (i = 0; i < num_primes; ++i) 
                     {
@@ -675,7 +676,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                         
                         ERRORlocale = 1;
                     }
-                    /*
+                    
                     if (mpz_sizeinbase(now, 10) < 100)
                     {
                         if (KP(now, num_primes, primes, degs))
@@ -688,7 +689,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                             REPORT<<"KP-composite"<<endl;   
                         }
                     }
-                    */
+                    
                 }   
                 else
                 {
@@ -697,7 +698,6 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
             }
  		}
 	}
-    //cout<<endl<<"End of generation"<<endl;
     REPORT<<endl<<"End of generation"<<endl;
     
     {
@@ -705,12 +705,9 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
         struct tm * timeinfo;
         time (&rawtime);
         timeinfo = localtime (&rawtime);
-        //cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
         REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
     
-    //cout<<"Number of primes:"<<prime_amount<<endl;
-    //cout<<"Total:"<<total_amount<<endl;
     
     REPORT<<"Number of primes:"<<prime_amount<<endl;
     REPORT<<"Total:"<<total_amount<<endl;
@@ -719,17 +716,12 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
     {
         mpf_div(percent, prime_amount, total_amount);
         mpf_div(uns, prime_amount, total_amount);
-        //cout<<"Percent of found:"<<percent<<endl;
         REPORT<<"Percent of found:"<<percent<<endl;
         mpf_div(percent, prime_amount_probabilty_test, total_amount);
-        //cout<<"Percent of probable:"<<percent<<endl;
         REPORT<<"Percent of probable:"<<percent<<endl;
     }
     
     TIMER = clock() - TIMER;
-    //cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
-    //cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
-    //cout<<"ERRORlocale = "<<ERRORlocale<<endl;
     REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
     REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
     REPORT<<"ERRORlocale = "<<ERRORlocale<<endl;

@@ -494,10 +494,14 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
 
 void stack::test()
 {
-    unsigned int numberOfTests, numberOfPrimesForTest, NumberOfPrimes, MaxNumberOfPrimes = 100000;
+    unsigned int numberOfTests, numberOfPrimesForTest, NumberOfPrimes, MaxNumberOfPrimes = 100000, MIN_DEG, MAX_DEG;
     string OUTPUTdir;
     unsigned int i, j;
     char buff[10];
+    ofstream OUTPUTreport("Tests(automated)\\TotalReport.txt");
+    time_t TIMER, rawtime;
+    struct tm * timeinfo;
+    
     
     cout<<"Enter number of tests:"<<endl;
     cin>>numberOfTests;
@@ -505,9 +509,19 @@ void stack::test()
     cout<<"Enter number of primes:"<<endl;
     cin>>numberOfPrimesForTest;
     
+    cout<<"Enter MIN_DEG:"<<endl;
+    cin>>MIN_DEG;
+    
+    cout<<"Enter MAX_DEG:"<<endl;
+    cin>>MAX_DEG;
+    
+    mpf_t minResult, maxResult;
     mpf_t* results = (mpf_t*)calloc(numberOfTests, sizeof(mpf_t));
     mpz_t* primes = (mpz_t*)calloc(MaxNumberOfPrimes, sizeof(mpz_t));
     mpz_t* primesForTest = (mpz_t*)calloc(numberOfPrimesForTest, sizeof(mpz_t));
+    
+    mpf_init_set_ui(minResult, 1);
+    mpf_init_set_ui(maxResult, 0);
     
     {
         FILE *f1;
@@ -533,11 +547,20 @@ void stack::test()
         fclose(f1);
     }
     
+    {
+        TIMER = clock();
+        
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+        OUTPUTreport<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    }
+    
     for (j = 0; j < numberOfPrimesForTest; ++j)
     {
         mpz_init(primesForTest[j]);
     }
     mpz_set_ui(primesForTest[0], 2);
+    
     
     for (i = 0; i < numberOfTests; ++i)
     {
@@ -548,7 +571,7 @@ void stack::test()
         ofstream OUTPUTprimes((OUTPUTdir+string("\\primes.txt")).c_str());
         ofstream OUTPUTtest((OUTPUTdir+string("\\test.txt")).c_str());
         ofstream OUTPUTpercent((OUTPUTdir+string("\\percent.txt")).c_str());
-        ofstream OUTPUTavarage("Tests(automated)\\Average.txt");
+        
         OUTPUTprimes<<primesForTest[0]<<endl;
         for (j = 1; j < numberOfPrimesForTest; ++j)
         {
@@ -556,22 +579,40 @@ void stack::test()
             OUTPUTprimes<<primesForTest[j]<<endl;
         }
         mpf_init(results[i]);
-        this->gen_prime_testing(results[i], primesForTest, numberOfPrimesForTest, 1, 3);   
-        OUTPUTtest<<numberOfPrimesForTest<<endl<<"1"<<endl<<"3"<<endl<<"0";
+        this->gen_prime_testing(results[i], primesForTest, numberOfPrimesForTest, MIN_DEG, MAX_DEG);   
+        OUTPUTtest<<numberOfPrimesForTest<<endl<<MIN_DEG<<endl<<MAX_DEG<<endl<<"0";
         OUTPUTpercent<<results[i];
         OUTPUTprimes.close();
         OUTPUTtest.close();
         OUTPUTpercent.close();
         cout<<results[i]<<endl;
-        OUTPUTavarage<<results[i]<<endl;
-        OUTPUTavarage.close();
     }
     mpf_t totalAvarage;
     mpf_init_set(totalAvarage, results[0]);
     for (i = 1; i < numberOfTests; ++i)
         mpf_add(totalAvarage, totalAvarage, results[i]);
     mpf_div_ui(totalAvarage, totalAvarage, numberOfTests);
+    
+    {        
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+        cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        OUTPUTreport<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        
+        TIMER = clock() - TIMER;
+        cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+        cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+        
+        OUTPUTreport<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+        OUTPUTreport<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    }
     cout<<endl<<"Avarage percent:"<<totalAvarage<<endl;
+    OUTPUTreport<<endl;
+    OUTPUTreport<<"numberOfPrimesForTest: "<<numberOfPrimesForTest<<endl;
+    OUTPUTreport<<"MIN_DEG: "<<MIN_DEG<<endl<<"MAX_DEG: "<<MAX_DEG<<endl;
+    OUTPUTreport<<"Avarage percent:"<<totalAvarage<<endl;
+    OUTPUTreport.close();
+    
     for (i = 0; i < numberOfTests; ++i) mpf_clear(results[i]);
     for (i = 0; i < NumberOfPrimes; ++i) mpz_clear(primes[i]);
     for (i = 0; i < numberOfPrimesForTest; ++i) mpz_clear(primesForTest[i]);  
