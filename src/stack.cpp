@@ -309,7 +309,7 @@ void stack::fact()
                 cout<<factors[i]<<" - "<<degs[i]<<endl;
         }
         else
-            cout<<"Divisors higher than 1000000"<<endl;
+            cout<<"Divisors N-1 higher than 1000000"<<endl;
     }
 }
 
@@ -329,30 +329,14 @@ void stack::root()
         cin>>FLAG;
         
         {
-            int num_divisors = 0;
-            mpz_t divisors[NUM_DIV_1];
-            
-            // copying initial number from stack
             mpz_t local;
-            mpz_init_set(local, this->array[this->num-1]);
-            mpz_sub_ui(local, local, 1);
-            //
-            // Trial division
-            mpz_t r;
-            mpz_init(r);
-            for (int i = 2; i < 1000000 && num_divisors < NUM_DIV_1; ++i)
-            {	
-                if (mpz_mod_ui(r, local, i) == 0)
-                {
-                    while (mpz_mod_ui(r, local, i)==0)
-                        mpz_cdiv_q_ui(local, local, i);
-                    mpz_init(divisors[num_divisors]);
-                    mpz_set_ui(divisors[num_divisors], i);
-                    ++num_divisors;
-                }
-            }
-            mpz_clear(r);
-            //
+            mpz_init(local);
+            mpz_sub_ui(local, this->array[this->num], 1);
+            
+            int num_divisors;
+            mpz_t divisors[MAX_FACTORS];
+            int degs[MAX_FACTORS];
+            factorize(local, divisors, num_divisors, degs);
             
             int f = 0, R = 0, max_tries = 20;
             mpz_t variable1;

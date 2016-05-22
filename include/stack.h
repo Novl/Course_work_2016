@@ -4,7 +4,6 @@
 #include "../include/headers.h"
 
 const int SIZE_STACK = 400000;
-const int NUM_DIV_1 = 200;
 const int NUM_DIV_2 = 100;
 const int MAX_FACTORS = 1000;
 
