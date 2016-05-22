@@ -22,6 +22,7 @@ void menu()
     printf("\n \'kp\' to check Konyagin-Pomerance test");
 	printf("\n \'g\' to generate primes");
     printf("\n \'gf\' to generate file with primes(amount, size_bits)");
+    printf("\n \'t\' to test generation algo");
 	printf("\n");
     
     printf("\n --Op-s with stack");
@@ -52,6 +53,7 @@ void short_menu()
     printf("\n \'kp\' to check Konyagin-Pomerance test");
 	printf("\n \'g\' to generate primes");
     printf("\n \'gf\' to generate file with primes(amount, size_bits)");
+    printf("\n \'t\' to test generation algo");
 	printf("\n");
     
 	printf("\n \'m\' to show this menu");

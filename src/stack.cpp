@@ -492,7 +492,78 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
     return false;
 }
 
-
+void stack::test()
+{
+    unsigned int numberOfTests, numberOfPrimesForTest, NumberOfPrimes, MaxNumberOfPrimes = 100000;
+    string OUTPUTdir;
+    unsigned int i, j;
+    char buff[10];
+    
+    cout<<"Enter number of tests:"<<endl;
+    cin>>numberOfTests;
+    
+    cout<<"Enter number of tests:"<<endl;
+    cin>>numberOfPrimesForTest;
+    
+    mpf_t* results = (mpf_t*)calloc(numberOfTests, sizeof(mpf_t));
+    mpz_t* primes = (mpz_t*)calloc(MaxNumberOfPrimes, sizeof(mpz_t));
+    mpz_t* primesForTest = (mpz_t*)calloc(numberOfPrimesForTest, sizeof(mpz_t));
+    
+    {
+        FILE *f1;
+        char str[250];
+        cout<<"Enter name of file or '-' to read default 'primes.txt':";
+        cin>>str;
+        if (strcmp(str, "-") == 0) 
+            strcpy(str, "primes.txt\0");
+        f1 = fopen(str, "r");
+        if (f1 == NULL) 
+        {
+            cout<<"No such file"<<endl;
+            return;
+        }
+        
+        mpz_init(primes[0]);
+        for (i = 0; i < MaxNumberOfPrimes  && gmp_fscanf(f1,"%Zd\n", primes[i]) > 0 ; ++i) 
+        {
+            mpz_init(primes[i+1]);
+        }
+        
+        NumberOfPrimes = i;
+        fclose(f1);
+    }
+    
+    for (i = 0; i < numberOfTests; ++i)
+    {
+        itoa(i, buff, 10);
+        OUTPUTdir = string("Tests(autumated)\\Test")+string(buff);
+        system((string("mkdir ")+OUTPUTdir).c_str());
+        ofstream OUTPUTprimes((OUTPUTdir+string("\\primes.txt")).c_str());
+        ofstream OUTPUTtest((OUTPUTdir+string("\\test.txt")).c_str());
+        ofstream OUTPUTpercent((OUTPUTdir+string("\\percent.txt")).c_str());
+        for (j = 0; j < numberOfPrimesForTest; ++j)
+        {
+            mpz_init_set(primesForTest[j], primes[ rand() % NumberOfPrimes ]);
+            OUTPUTprimes<<primesForTest[j]<<endl;
+        }
+        mpf_init(results[i]);
+        this->gen_prime_testing(results[i], primesForTest, numberOfPrimesForTest, 1, 3);   
+        OUTPUTtest<<numberOfPrimesForTest<<endl<<"1"<<endl<<"3"<<endl<<"0";
+        OUTPUTpercent<<results[i];
+        OUTPUTprimes.close();
+        OUTPUTtest.close();
+        OUTPUTpercent.close();
+        cout<<results[i]<<endl;
+    }
+    mpf_t totalAvarage;
+    mpf_init_set(totalAvarage, results[0]);
+    for (i = 1; i < numberOfTests; ++i)
+        mpf_add(totalAvarage, totalAvarage, results[i]);
+    mpf_div_ui(totalAvarage, totalAvarage, numberOfTests);
+    for (i = 0; i < numberOfTests; ++i) mpf_clear(results[i]);
+    for (i = 0; i < NumberOfPrimes; ++i) mpz_clear(primes[i]);
+    for (i = 0; i < numberOfPrimesForTest; ++i) mpz_clear(primesForTest[i]);  
+}
 
 bool stack::isValid(string input)
 {
@@ -594,107 +665,29 @@ bool stack::isValid(string input)
         this->root();
     }
     else
+    // KP algo
     if (input.compare("kp")==0)
     {
         this->KP();
     }
     else
-    /*
-        Показывает разложение числа p-1 на простые числа до 400000 ,
-        показывает получившееся произведение и остаток, 
-        потом итеративно применяется к остатку.
-    *
-    if (input.compare("B")==0)
-    {
-        //mpz_set(result_ad, elementary_divisors(Stack[now], divisors));
-        //elementary_divisors(Stack[now], divisors, result_ad);
-        mpz_t result_ad[NUM_DIV_2];
-        //mpz_init(result_ad);
-        for (i=0; i<NUM_DIV_2; i++) mpz_init(result_ad[i]);
-        mpz_t result_am[NUM_DIV_2];
-        //mpz_init_set_ui(result_am, 1);
-        for (i=0; i<NUM_DIV_2; i++) mpz_init_set_ui(result_am[i], 1);
-        
-        
-        mpz_t divisors[NUM_DIV_1][NUM_DIV_2];
-        for (i=0;i<NUM_DIV_1;i++) 
-            for (j=0;j<NUM_DIV_2;j++)
-                mpz_init(divisors[i][j]);
-        
-        int size_mass[NUM_DIV_1];
-        for (i=0;i<NUM_DIV_1;i++)	size_mass[i]=0;
-        
-        // -- ----------------- prefunction ----------
-        
-        t=mpz_probab_prime_p(Stack[now-1], 20);
-        if (t==2) printf("Definitely prime\n");
-            else
-                if (t==0) printf("Composite\n");
-                else 
-                {
-                    mpz_set(result_ad[0], Stack[now-1]);
-                    //mpz_sub_ui(result_ad[0], Stack[now-1], 1);
-                    j=0;
-                    //-----------------------
-                    
-                    printf("Enter \'S\' to next iteration or smth to exit  -  ");
-                    scanf("%s", str1);
-                    while (str1[0]=='S')
-                    {
-                            if (mpz_cmp_ui(result_ad[j], 2)>0)
-                            {
-                                //-------------------------------   function --------------------
-                                
-                                gmp_printf("Divisors %Zd-1 :\n", result_ad[j]);
-                                mpz_sub_ui(result_ad[j], result_ad[j], 1);
-                                mpz_set(result_ad[j+1], result_ad[j]);
-                                
-                                
-                                for (i=2;i<400000;i++)
-                                {	
-                                    if (mpz_mod_ui(r, result_ad[j+1], i)==0)
-                                    {
-                                        printf("\nDivisor - %d", i);
-                                        while (mpz_mod_ui(r, result_ad[j+1], i)==0)
-                                        {
-                                            mpz_cdiv_q_ui(result_ad[j+1], result_ad[j+1], i);
-                                            mpz_mul_ui(result_am[j], result_am[j], i);
-                                            printf("*%d", i);
-                                        }
-                                        //mpz_set_ui(divisors[j][size_mass[j]++], i);
-                                    }
-                                }
-                                gmp_printf("\n result_ad = %Zd\n result_am = %Zd\n remainder = %Zd\n", result_ad[j], result_am[j], result_ad[j+1]);
-                            }
-                            else printf("Remainder is not prime\n");
-                        
-                        //mpz_mul(r, result_am[j], result_ad[j+1]);
-                        //gmp_printf("\n multiplication =  %Zd\n", r);
-                        printf("\nEnter \'S\' to next iteration or smth to exit  -  ");
-                        scanf("%s", str1);
-                        j++;	
-                    }
-                    //-----------------------------------     end function- ---------------------
-                    
-                }
-        //------------------------   need clear ---------------
-    }
-    else
-    */
+    // default gen_prime
     if (input.compare("g")==0)
     {
         this->gen_prime();
     }
     else
+    // random primes generation prime to file
     if (input.compare("gf")==0)
     {
         this->gen_primes_file();
     }
-    // else
-    // if (input.compare("gl")==0)
-    // {
-        // this->gen_long_prime();
-    // }
+    else
+    // testing
+    if (input.compare("t")==0)
+    {
+        this->test();
+    }
     else
     return false;
 

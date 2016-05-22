@@ -24,7 +24,7 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     fclose(f1);
     NumberOfPrimes = i;
 
-    cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
+    //cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
 //
     int step = 0;
     bool uns;
@@ -41,22 +41,22 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     mpz_t KProot;
     mpz_init(KProot);
     mpz_root(KProot, N, 2);
-    cout<<"KProot = "<<KProot<<endl;
+    //cout<<"KProot = "<<KProot<<endl;
     
     // a ::= primes[step]
     while (mpz_cmp(up, primes[step]) >= 0)
     {
         cout<<"a = "<<primes[step]<<endl;
         mpz_powm(KPvariable, primes[step], F, N);
-        cout<<"a ^ F:"<<KPvariable<<endl;
+        //cout<<"a ^ F:"<<KPvariable<<endl;
         if (mpz_cmp_ui(KPvariable, 1) == 0) goto NEXT;
         mpz_sub_ui(KPvariable, N, 1);
         mpz_powm(KPvariable1, primes[step], KPvariable, N);
-        cout<<"a ^ (N-1):"<<KPvariable1<<endl;
+        //cout<<"a ^ (N-1):"<<KPvariable1<<endl;
         if (mpz_cmp_ui(KPvariable1, 1) != 0) goto NO;
         
         this->ord(KPord, primes[step], N, num_divisors, divisors, degs);
-        cout<<"a ord N:"<<KPord<<endl;
+        //cout<<"a ord N:"<<KPord<<endl;
         for (i = 0; i < num_divisors; ++i)
             if (degs[i] > 0 && mpz_divisible_p(KPord, divisors[i]))
             {
@@ -69,8 +69,8 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
         mpz_gcd(KPgcd, KPvariable1, N);
         if (mpz_cmp_ui(KPgcd, 1) > 0) goto NO;
         mpz_lcm(KPvariable, F, KPord);
-        cout<<"F = "<<F<<endl;
-        cout<<"lcm(НОК) = "<<KPvariable<<endl;
+        //cout<<"F = "<<F<<endl;
+        //cout<<"lcm(НОК) = "<<KPvariable<<endl;
         mpz_set(F, KPvariable);
         if (mpz_cmp(F, KProot) >= 0) goto YES;
         NEXT:++step;

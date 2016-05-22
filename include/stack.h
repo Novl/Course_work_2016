@@ -45,6 +45,8 @@ class stack
     void ord(mpz_t, const mpz_t, const mpz_t, const int, const mpz_t*, const int*);
     void gen_prime();
     void gen_primes_file();
+    void gen_prime_testing(mpf_t, const mpz_t* , const int , const int , const int );
+    void test();
     void KP();
     bool KP(const mpz_t);
     bool KP(const mpz_t, const int, const mpz_t*, const int*);

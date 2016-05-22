@@ -1,7 +1,7 @@
 #include "../include/stack.h"
 // - ----- -----------------------------------------------------------------------------------------
 
-// !!!!! THE FIRST PRIME SHOULD be '2' !!!!!
+// !!!!! FIRST PRIME SHOULD be '2' !!!!!
 
 const int MAX_TRIES = 20;
 
@@ -188,6 +188,8 @@ void stack::gen_prime()
             
             if (t == 2) 
             {
+                mpf_add_ui(prime_amount_probabilty_test, prime_amount_probabilty_test, 1);
+                mpf_add_ui(prime_amount, prime_amount, 1);
                 REPORT<<"Definitely prime by GMP prob test"<<endl;
                 if (all >= 2)
                 {
@@ -546,3 +548,199 @@ void stack::gen_primes_file()
     REPORT.close();
     GENERATED.close();
 }
+
+void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_primes, const int MIN_DEG, const int MAX_DEG)
+{
+    ofstream REPORT("report.txt", ofstream::out);
+    ofstream GENERATED("generatedPrimesTest().txt", ofstream::app);
+    time_t TIMER, TIMER1, rawtime;
+    struct tm * timeinfo;
+    
+    int ERRORlocale = 0;
+	int i, j;
+    int all = 0;
+	int degs[num_primes];
+    int DoneProgress;
+    
+	mpz_t now; // assumed prime
+	mpz_t mult;
+    mpz_t variableForRoot;
+    mpf_t total_amount, prime_amount, prime_amount_probabilty_test;
+    mpf_t percent;
+     
+	mpz_init(now);
+	mpz_init(mult);
+    mpz_init(variableForRoot);
+    mpf_init_set_ui(total_amount, 0);
+    mpf_init_set_ui(prime_amount, 0);
+    mpf_init_set_ui(prime_amount_probabilty_test, 0);
+    mpf_init(percent);
+    
+    REPORT<<"Entered number of using primes :"<<num_primes<<endl;
+	REPORT<<"Entered MIN_DEG :"<<MIN_DEG<<endl;
+    REPORT<<"Entered MAX_DEG :"<<MAX_DEG<<endl;
+    REPORT<<endl;
+    
+// initialization
+    {
+        for (i = 0; i < num_primes;  ++i) 
+            degs[i] = MIN_DEG;	
+        j = 0;
+        DoneProgress = 1;
+        TIMER = clock();
+        
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+        REPORT<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    }
+ //  GENERATION
+	while (j < num_primes)
+	{
+		j=0;
+		while ((degs[j] == MAX_DEG) && (j < num_primes))
+		{
+			degs[j] = MIN_DEG;
+			++j;
+		}
+        
+        if (j == DoneProgress)
+        {
+            time(&rawtime);
+            timeinfo = localtime(&rawtime);
+            cout<<"# "<<100*(float)DoneProgress/num_primes<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+            REPORT<<"# "<<100*(float)DoneProgress/num_primes<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+            
+            TIMER1 = clock() - TIMER;
+            TIMER1 = TIMER1/CLOCKS_PER_SEC;
+            cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+            REPORT<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+            
+            mpf_div(percent, prime_amount, total_amount);
+            cout<<"Percent of found:"<<percent<<endl;
+            REPORT<<"Percent of found:"<<percent<<endl;
+            
+            mpf_div(percent, prime_amount_probabilty_test, total_amount);
+            cout<<"Percent of probable:"<<percent<<endl;
+            REPORT<<"Percent of probable:"<<percent<<endl;
+            
+            ++DoneProgress;
+        }
+        
+		if (j < num_primes)
+		{
+            mpf_add_ui(total_amount, total_amount, 1);
+			++(degs[j]);
+			// making new number
+            mpz_set_ui(now, 1);
+			for (i = 0; i < num_primes; ++i)
+                if (degs[i] != 0)
+                {
+                    mpz_pow_ui(mult, primes[i], degs[i]);
+                    mpz_mul(now, now, mult);
+                }
+			mpz_add_ui(now, now, 1);
+			// done N = now
+			int t = mpz_probab_prime_p(now, 25);
+            if (t == 2) 
+            {
+                mpf_add_ui(prime_amount_probabilty_test, prime_amount_probabilty_test, 1);
+                mpf_add_ui(prime_amount, prime_amount, 1);
+                GENERATED<<now<<endl;
+                REPORT<<"Definitely prime by GMP prob test"<<endl;
+            }
+            else
+            if (t == 1) 
+            {
+                mpf_add_ui(prime_amount_probabilty_test, prime_amount_probabilty_test, 1);
+                if (this->root(variableForRoot, MAX_TRIES, now, num_primes, primes, degs))
+                {
+                    //comment HERE
+                    mpf_add_ui(prime_amount, prime_amount, 1);
+                    REPORT<<"DEGS:"<<endl;
+                    for (i = 0; i < num_primes; ++i) 
+                    {
+                        if (degs[i] > 0)
+                            REPORT<<primes[i]<<" - "<<degs[i]<<endl;
+                    }
+                    REPORT<<"Digits(base = 10) = "<<mpz_sizeinbase(now, 10)<<endl;
+                    REPORT<<"Digits(base = 2) = "<<mpz_sizeinbase(now, 2)<<endl;                    
+                    REPORT<<"Primitive root: "<<variableForRoot<<endl<<endl;
+                    
+                    if (mpz_cmp_ui(variableForRoot, 1) == 0)
+                    {
+                        REPORT<<endl;
+                        REPORT<<"ERRRRRRRRRRRRRRRRRRRRRRRRROR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+                        REPORT<<endl;
+                        
+                        ERRORlocale = 1;
+                    }
+                    if (mpz_sizeinbase(now, 10) < 100)
+                    {
+                        if (KP(now, num_primes, primes, degs))
+                        {
+                            REPORT<<"KP-prime"<<endl;
+                        }
+                        else
+                        {
+                            cout<<"KP-composite"<<endl;
+                            REPORT<<"KP-composite"<<endl;   
+                        }
+                    }
+                }   
+                else
+                {
+                    REPORT<<"Didn't find primitive root"<<endl;
+                }
+            }
+ 		}
+	}
+    cout<<endl<<"End of generation"<<endl;
+    REPORT<<endl<<"End of generation"<<endl;
+    
+    if (all >= 0)
+    {
+        time_t rawtime;
+        struct tm * timeinfo;
+        time (&rawtime);
+        timeinfo = localtime (&rawtime);
+        cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+    }
+    
+    cout<<"Number of primes:"<<prime_amount<<endl;
+    cout<<"Total:"<<total_amount<<endl;
+    
+    REPORT<<"Number of primes:"<<prime_amount<<endl;
+    REPORT<<"Total:"<<total_amount<<endl;
+    
+    if (mpf_cmp_ui(total_amount, 0) > 0)
+    {
+        mpf_div(percent, prime_amount, total_amount);
+        mpf_div(uns, prime_amount, total_amount);
+        cout<<"Percent of found:"<<percent<<endl;
+        REPORT<<"Percent of found:"<<percent<<endl;
+        mpf_div(percent, prime_amount_probabilty_test, total_amount);
+        cout<<"Percent of probable:"<<percent<<endl;
+        REPORT<<"Percent of probable:"<<percent<<endl;
+    }
+    
+    TIMER = clock() - TIMER;
+    cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    cout<<"ERRORlocale = "<<ERRORlocale<<endl;
+    REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    REPORT<<"ERRORlocale = "<<ERRORlocale<<endl;
+    
+    
+    mpf_clear(percent);
+	mpz_clear(now);
+	mpz_clear(mult);
+    mpz_clear(variableForRoot);
+    mpf_clear(total_amount);
+    mpf_clear(prime_amount);
+    mpf_clear(prime_amount_probabilty_test);
+    REPORT.close();
+}
+
