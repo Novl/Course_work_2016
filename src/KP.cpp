@@ -44,6 +44,7 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     //cout<<"KProot = "<<KProot<<endl;
     
     // a ::= primes[step]
+    
     while (mpz_cmp(up, primes[step]) >= 0)
     {
         cout<<"a = "<<primes[step]<<endl;

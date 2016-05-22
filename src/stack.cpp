@@ -502,7 +502,7 @@ void stack::test()
     cout<<"Enter number of tests:"<<endl;
     cin>>numberOfTests;
     
-    cout<<"Enter number of tests:"<<endl;
+    cout<<"Enter number of primes:"<<endl;
     cin>>numberOfPrimesForTest;
     
     mpf_t* results = (mpf_t*)calloc(numberOfTests, sizeof(mpf_t));
@@ -533,17 +533,25 @@ void stack::test()
         fclose(f1);
     }
     
+    for (j = 0; j < numberOfPrimesForTest; ++j)
+    {
+        mpz_init(primesForTest[j]);
+    }
+    mpz_set_ui(primesForTest[0], 2);
+    
     for (i = 0; i < numberOfTests; ++i)
     {
         itoa(i, buff, 10);
-        OUTPUTdir = string("Tests(autumated)\\Test")+string(buff);
+        OUTPUTdir = string("Tests(automated)\\Test")+string(buff);
         system((string("mkdir ")+OUTPUTdir).c_str());
         ofstream OUTPUTprimes((OUTPUTdir+string("\\primes.txt")).c_str());
         ofstream OUTPUTtest((OUTPUTdir+string("\\test.txt")).c_str());
         ofstream OUTPUTpercent((OUTPUTdir+string("\\percent.txt")).c_str());
-        for (j = 0; j < numberOfPrimesForTest; ++j)
+        ofstream OUTPUTavarage("Tests(automated)\\Average.txt");
+        OUTPUTprimes<<primesForTest[0]<<endl;
+        for (j = 1; j < numberOfPrimesForTest; ++j)
         {
-            mpz_init_set(primesForTest[j], primes[ rand() % NumberOfPrimes ]);
+            mpz_set(primesForTest[j], primes[ rand() % NumberOfPrimes ]);
             OUTPUTprimes<<primesForTest[j]<<endl;
         }
         mpf_init(results[i]);
@@ -554,12 +562,15 @@ void stack::test()
         OUTPUTtest.close();
         OUTPUTpercent.close();
         cout<<results[i]<<endl;
+        OUTPUTavarage<<results[i]<<endl;
+        OUTPUTavarage.close();
     }
     mpf_t totalAvarage;
     mpf_init_set(totalAvarage, results[0]);
     for (i = 1; i < numberOfTests; ++i)
         mpf_add(totalAvarage, totalAvarage, results[i]);
     mpf_div_ui(totalAvarage, totalAvarage, numberOfTests);
+    cout<<endl<<"Avarage percent:"<<totalAvarage<<endl;
     for (i = 0; i < numberOfTests; ++i) mpf_clear(results[i]);
     for (i = 0; i < NumberOfPrimes; ++i) mpz_clear(primes[i]);
     for (i = 0; i < numberOfPrimesForTest; ++i) mpz_clear(primesForTest[i]);  

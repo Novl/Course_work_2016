@@ -675,6 +675,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                         
                         ERRORlocale = 1;
                     }
+                    /*
                     if (mpz_sizeinbase(now, 10) < 100)
                     {
                         if (KP(now, num_primes, primes, degs))
@@ -687,6 +688,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                             REPORT<<"KP-composite"<<endl;   
                         }
                     }
+                    */
                 }   
                 else
                 {
