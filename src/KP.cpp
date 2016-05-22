@@ -10,20 +10,21 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     mpz_init_set_ui(up, mpz_sizeinbase(N, 2));
     mpz_mul(up, up, up);
     mpz_add_ui(up, up, 1);
-    int MaxNumberOfPrimes = 10000, NumberOfPrimes;
+    int MaxNumberOfPrimes = 100000, NumberOfPrimes;
 	mpz_t primes[MaxNumberOfPrimes];
     
     FILE *f1;
 // reading basic using primes less than log(N)^2+1
     f1 = fopen("primes.txt", "r");
     mpz_init(primes[0]);
-	for (i = 0; (gmp_fscanf(f1, "%Zd\n", primes[i]) > 0) && (mpz_cmp(up, primes[i]) >= 0); ++i) 
+	for (i = 0; i < MaxNumberOfPrimes && (gmp_fscanf(f1, "%Zd\n", primes[i]) > 0) && (mpz_cmp(up, primes[i]) >= 0); ++i) 
     {
         mpz_init(primes[i+1]);
     }
     fclose(f1);
     NumberOfPrimes = i;
 
+    if (i == MaxNumberOfPrimes) return false;
     //cout<<"Number of readed primes:"<<NumberOfPrimes<<endl;
 //
     int step = 0;
@@ -47,7 +48,7 @@ bool stack::KP(const mpz_t N, const int num_divisors, const mpz_t* divisors, con
     
     while (mpz_cmp(up, primes[step]) >= 0)
     {
-        cout<<"a = "<<primes[step]<<endl;
+        //cout<<"a = "<<primes[step]<<endl;
         mpz_powm(KPvariable, primes[step], F, N);
         //cout<<"a ^ F:"<<KPvariable<<endl;
         if (mpz_cmp_ui(KPvariable, 1) == 0) goto NEXT;

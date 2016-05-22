@@ -498,10 +498,8 @@ void stack::test()
     string OUTPUTdir;
     unsigned int i, j;
     char buff[10];
-    ofstream OUTPUTreport("Tests(automated)\\TotalReport.txt");
     time_t TIMER, rawtime;
     struct tm * timeinfo;
-    
     
     cout<<"Enter number of tests:"<<endl;
     cin>>numberOfTests;
@@ -547,6 +545,8 @@ void stack::test()
         fclose(f1);
     }
     
+    system("mkdir Tests(automated)");
+    ofstream OUTPUTreport("Tests(automated)\\TotalReport.txt");
     {
         TIMER = clock();
         
@@ -590,7 +590,11 @@ void stack::test()
     mpf_t totalAvarage;
     mpf_init_set(totalAvarage, results[0]);
     for (i = 1; i < numberOfTests; ++i)
+    {
+        if (mpf_cmp(minResult, results[i]) > 0) mpf_set(minResult, results[i]);
+        if (mpf_cmp(maxResult, results[i]) < 0) mpf_set(maxResult, results[i]);
         mpf_add(totalAvarage, totalAvarage, results[i]);
+    }
     mpf_div_ui(totalAvarage, totalAvarage, numberOfTests);
     
     {        
@@ -606,16 +610,21 @@ void stack::test()
         OUTPUTreport<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
         OUTPUTreport<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
     }
+    cout<<"min_percent:"<<minResult<<endl;
+    cout<<"max_percent:"<<maxResult<<endl;
     cout<<endl<<"Avarage percent:"<<totalAvarage<<endl;
     OUTPUTreport<<endl;
     OUTPUTreport<<"numberOfPrimesForTest: "<<numberOfPrimesForTest<<endl;
     OUTPUTreport<<"MIN_DEG: "<<MIN_DEG<<endl<<"MAX_DEG: "<<MAX_DEG<<endl;
+    OUTPUTreport<<"min_percent:"<<minResult<<endl;
+    OUTPUTreport<<"max_percent:"<<maxResult<<endl;
     OUTPUTreport<<"Avarage percent:"<<totalAvarage<<endl;
     OUTPUTreport.close();
     
     for (i = 0; i < numberOfTests; ++i) mpf_clear(results[i]);
     for (i = 0; i < NumberOfPrimes; ++i) mpz_clear(primes[i]);
     for (i = 0; i < numberOfPrimesForTest; ++i) mpz_clear(primesForTest[i]);  
+    mpf_clears(minResult, maxResult, totalAvarage, NULL);
 }
 
 bool stack::isValid(string input)
