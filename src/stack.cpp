@@ -631,6 +631,7 @@ void stack::test()
     OUTPUTreport<<endl;
     OUTPUTreport<<"Used base file = "<<str<<endl;
     OUTPUTreport<<"Used start primes = "<<numberOfStartPrimes<<endl;
+    OUTPUTreport<<"numberOfTests = "<<numberOfTests<<endl;
     OUTPUTreport<<"numberOfPrimesForTest = "<<numberOfPrimesForTest<<endl;
     OUTPUTreport<<"MIN_DEG = "<<MIN_DEG<<endl<<"MAX_DEG = "<<MAX_DEG<<endl;
     OUTPUTreport<<"min_percent = "<<minResult<<endl;
