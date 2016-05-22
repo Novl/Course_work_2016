@@ -551,14 +551,13 @@ void stack::gen_primes_file()
 
 void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_primes, const int MIN_DEG, const int MAX_DEG)
 {
-    ofstream REPORT("report.txt", ofstream::out);
+    ofstream REPORT("report.txt", ofstream::app);
     ofstream GENERATED("generatedPrimesTest().txt", ofstream::app);
     time_t TIMER, TIMER1, rawtime;
     struct tm * timeinfo;
     
     int ERRORlocale = 0;
 	int i, j;
-    int all = 0;
 	int degs[num_primes];
     int DoneProgress;
     
@@ -592,7 +591,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
         time(&rawtime);
         timeinfo = localtime(&rawtime);
         REPORT<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
-        cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        //cout<<"Started - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
  //  GENERATION
 	while (j < num_primes)
@@ -608,20 +607,20 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
         {
             time(&rawtime);
             timeinfo = localtime(&rawtime);
-            cout<<"# "<<100*(float)DoneProgress/num_primes<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+            //cout<<"# "<<100*(float)DoneProgress/num_primes<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
             REPORT<<"# "<<100*(float)DoneProgress/num_primes<<"%"<<" - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
             
             TIMER1 = clock() - TIMER;
             TIMER1 = TIMER1/CLOCKS_PER_SEC;
-            cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
+            //cout<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
             REPORT<<"Took time - "<<TIMER1/3600<<" hours:"<<(TIMER1%3600)/60<<" minutes:"<<(TIMER1%3600)%60<<" seconds"<<endl;
             
             mpf_div(percent, prime_amount, total_amount);
-            cout<<"Percent of found:"<<percent<<endl;
+            //cout<<"Percent of found:"<<percent<<endl;
             REPORT<<"Percent of found:"<<percent<<endl;
             
             mpf_div(percent, prime_amount_probabilty_test, total_amount);
-            cout<<"Percent of probable:"<<percent<<endl;
+            //cout<<"Percent of probable:"<<percent<<endl;
             REPORT<<"Percent of probable:"<<percent<<endl;
             
             ++DoneProgress;
@@ -656,6 +655,7 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
                 if (this->root(variableForRoot, MAX_TRIES, now, num_primes, primes, degs))
                 {
                     //comment HERE
+                    GENERATED<<now<<endl;
                     mpf_add_ui(prime_amount, prime_amount, 1);
                     REPORT<<"DEGS:"<<endl;
                     for (i = 0; i < num_primes; ++i) 
@@ -697,21 +697,20 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
             }
  		}
 	}
-    cout<<endl<<"End of generation"<<endl;
+    //cout<<endl<<"End of generation"<<endl;
     REPORT<<endl<<"End of generation"<<endl;
     
-    if (all >= 0)
     {
         time_t rawtime;
         struct tm * timeinfo;
         time (&rawtime);
         timeinfo = localtime (&rawtime);
-        cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
+        //cout<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
         REPORT<<"Ended - "<<timeinfo->tm_hour<<":"<<timeinfo->tm_min<<":"<<timeinfo->tm_sec<<endl;
     }
     
-    cout<<"Number of primes:"<<prime_amount<<endl;
-    cout<<"Total:"<<total_amount<<endl;
+    //cout<<"Number of primes:"<<prime_amount<<endl;
+    //cout<<"Total:"<<total_amount<<endl;
     
     REPORT<<"Number of primes:"<<prime_amount<<endl;
     REPORT<<"Total:"<<total_amount<<endl;
@@ -720,17 +719,17 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
     {
         mpf_div(percent, prime_amount, total_amount);
         mpf_div(uns, prime_amount, total_amount);
-        cout<<"Percent of found:"<<percent<<endl;
+        //cout<<"Percent of found:"<<percent<<endl;
         REPORT<<"Percent of found:"<<percent<<endl;
         mpf_div(percent, prime_amount_probabilty_test, total_amount);
-        cout<<"Percent of probable:"<<percent<<endl;
+        //cout<<"Percent of probable:"<<percent<<endl;
         REPORT<<"Percent of probable:"<<percent<<endl;
     }
     
     TIMER = clock() - TIMER;
-    cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
-    cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
-    cout<<"ERRORlocale = "<<ERRORlocale<<endl;
+    //cout<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
+    //cout<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
+    //cout<<"ERRORlocale = "<<ERRORlocale<<endl;
     REPORT<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
     REPORT<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
     REPORT<<"ERRORlocale = "<<ERRORlocale<<endl;
@@ -744,5 +743,6 @@ void stack::gen_prime_testing(mpf_t uns, const mpz_t* primes, const int num_prim
     mpf_clear(prime_amount);
     mpf_clear(prime_amount_probabilty_test);
     REPORT.close();
+    GENERATED.close();
 }
 

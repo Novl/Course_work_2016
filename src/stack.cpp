@@ -541,6 +541,7 @@ void stack::test()
     
     for (i = 0; i < numberOfTests; ++i)
     {
+        cout<<"testing: "<<i<<endl;
         itoa(i, buff, 10);
         OUTPUTdir = string("Tests(automated)\\Test")+string(buff);
         system((string("mkdir ")+OUTPUTdir).c_str());
