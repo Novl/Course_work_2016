@@ -503,12 +503,13 @@ bool stack::root(mpz_t uns, const int max_tries, const mpz_t N, const int num_di
 
 void stack::test()
 {
-    unsigned int numberOfTests, numberOfPrimesForTest, NumberOfPrimes, MaxNumberOfPrimes = 100000, MIN_DEG, MAX_DEG;
+    unsigned int numberOfTests, numberOfPrimesForTest, numberOfStartPrimes, NumberOfPrimes, MaxNumberOfPrimes = 100000, MIN_DEG, MAX_DEG;
     string OUTPUTdir;
     unsigned int i, j;
     char buff[10];
     time_t TIMER, rawtime;
     struct tm * timeinfo;
+    char str[250];
     
     cout<<"Enter number of tests:"<<endl;
     cin>>numberOfTests;
@@ -516,6 +517,10 @@ void stack::test()
     cout<<"Enter number of primes:"<<endl;
     cin>>numberOfPrimesForTest;
     
+    cout<<"Enter number of starting primes:"<<endl;
+    cin>>numberOfStartPrimes;
+    if (numberOfStartPrimes > 10 || numberOfStartPrimes <1)
+        numberOfStartPrimes = 1;
     cout<<"Enter MIN_DEG:"<<endl;
     cin>>MIN_DEG;
     
@@ -532,7 +537,6 @@ void stack::test()
     
     {
         FILE *f1;
-        char str[250];
         cout<<"Enter name of file or '-' to read default 'primes.txt':";
         cin>>str;
         if (strcmp(str, "-") == 0) 
@@ -567,8 +571,9 @@ void stack::test()
     for (j = 0; j < numberOfPrimesForTest; ++j)
     {
         mpz_init(primesForTest[j]);
+        if (j < numberOfStartPrimes)
+            mpz_set(primesForTest[j], primes[j]);
     }
-    mpz_set_ui(primesForTest[0], 2);
     
     
     for (i = 0; i < numberOfTests; ++i)
@@ -581,10 +586,11 @@ void stack::test()
         ofstream OUTPUTtest((OUTPUTdir+string("\\test.txt")).c_str());
         ofstream OUTPUTpercent((OUTPUTdir+string("\\percent.txt")).c_str());
         
-        OUTPUTprimes<<primesForTest[0]<<endl;
-        for (j = 1; j < numberOfPrimesForTest; ++j)
+        for (j = 0; j < numberOfStartPrimes; ++j)
+            OUTPUTprimes<<primesForTest[j]<<endl;
+        for (j = numberOfStartPrimes; j < numberOfPrimesForTest; ++j)
         {
-            mpz_set(primesForTest[j], primes[ rand() % NumberOfPrimes ]);
+            mpz_set(primesForTest[j], primes[ numberOfStartPrimes + (rand() % (NumberOfPrimes - numberOfStartPrimes)) ]);
             OUTPUTprimes<<primesForTest[j]<<endl;
         }
         mpf_init(results[i]);
@@ -619,15 +625,17 @@ void stack::test()
         OUTPUTreport<<"Took time - "<<TIMER/CLOCKS_PER_SEC<<" seconds"<<endl;
         OUTPUTreport<<"Took time - "<<(TIMER/CLOCKS_PER_SEC)/3600<<" hours:"<<((TIMER/CLOCKS_PER_SEC)%3600)/60<<" minutes:"<<((TIMER/CLOCKS_PER_SEC)%3600)%60<<" seconds"<<endl;
     }
-    cout<<"min_percent:"<<minResult<<endl;
-    cout<<"max_percent:"<<maxResult<<endl;
-    cout<<endl<<"Avarage percent:"<<totalAvarage<<endl;
+    cout<<"min_percent = "<<minResult<<endl;
+    cout<<"max_percent = "<<maxResult<<endl;
+    cout<<endl<<"Average percent = "<<totalAvarage<<endl;
     OUTPUTreport<<endl;
-    OUTPUTreport<<"numberOfPrimesForTest: "<<numberOfPrimesForTest<<endl;
-    OUTPUTreport<<"MIN_DEG: "<<MIN_DEG<<endl<<"MAX_DEG: "<<MAX_DEG<<endl;
-    OUTPUTreport<<"min_percent:"<<minResult<<endl;
-    OUTPUTreport<<"max_percent:"<<maxResult<<endl;
-    OUTPUTreport<<"Avarage percent:"<<totalAvarage<<endl;
+    OUTPUTreport<<"Used base file = "<<str<<endl;
+    OUTPUTreport<<"Used start primes = "<<numberOfStartPrimes<<endl;
+    OUTPUTreport<<"numberOfPrimesForTest = "<<numberOfPrimesForTest<<endl;
+    OUTPUTreport<<"MIN_DEG = "<<MIN_DEG<<endl<<"MAX_DEG = "<<MAX_DEG<<endl;
+    OUTPUTreport<<"min_percent = "<<minResult<<endl;
+    OUTPUTreport<<"max_percent = "<<maxResult<<endl;
+    OUTPUTreport<<"Average percent = "<<totalAvarage<<endl;
     OUTPUTreport.close();
     
     for (i = 0; i < numberOfTests; ++i) mpf_clear(results[i]);
