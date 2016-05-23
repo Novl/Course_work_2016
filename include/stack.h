@@ -19,6 +19,7 @@ class stack
     public:
     stack();
     ~stack();
+    bool isNumber(const string);
     bool isValid(std::string input);
     bool is_full();
     bool is_empty();

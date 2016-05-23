@@ -309,7 +309,12 @@ void stack::fact()
                 cout<<factors[i]<<" - "<<degs[i]<<endl;
         }
         else
-            cout<<"Divisors N-1 higher than 1000000"<<endl;
+        {
+            cout<<"Found factors:"<<endl;
+            for (int i = 0; i < num_factors; ++i)
+                cout<<factors[i]<<" - "<<degs[i]<<endl;
+            cout<<"But divisors N higher than 1000000"<<endl;
+        }
     }
 }
 
@@ -647,7 +652,7 @@ void stack::test()
 
 bool stack::isValid(string input)
 {
-    if (isdigit(input[0]))
+    if (isNumber(input))
     {
         this->add(input.c_str(), 10);
     }
@@ -771,5 +776,13 @@ bool stack::isValid(string input)
     else
     return false;
 
+    return true;
+}
+
+bool stack::isNumber(const string s)
+{
+    for (std::string::const_iterator it = s.begin(); it != s.end(); ++it)
+        if (*it < '0' || *it > '9')
+            return false;
     return true;
 }
