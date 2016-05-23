@@ -11,7 +11,6 @@ class stack
 {
     private:
     int num;
-    string stream;
     mpz_t array[SIZE_STACK];
     mpz_t variable;
     gmp_randstate_t	state;

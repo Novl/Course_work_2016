@@ -121,6 +121,7 @@ void stack::writeOne()
 void stack::writeAll()
 {
     fstream OUT;
+    string stream;
     cout<<"Enter name(path) of file(appending writing): ";
     cin>>stream;
     OUT.open(stream.c_str(), fstream::app | fstream::out);
@@ -134,6 +135,7 @@ void stack::read()
 {
     int number;
     ifstream IN;
+    string stream;
     cout<<endl<<"Enter name(path) of file: ";
     cin>>stream;
     cout<<"Enter number of numbers or '0' to read all(max = "<<SIZE_STACK<<"):";
@@ -310,10 +312,20 @@ void stack::fact()
         }
         else
         {
+            mpz_set(variable, this->array[this->num-1]);
             cout<<"Found factors:"<<endl;
             for (int i = 0; i < num_factors; ++i)
+            {
                 cout<<factors[i]<<" - "<<degs[i]<<endl;
+                for (int j = 0; j < degs[i]; ++j)
+                    mpz_cdiv_q(variable, variable, factors[i]);
+            }
             cout<<"But divisors N higher than 1000000"<<endl;
+            cout<<"Remainder:"<<endl<<variable<<endl;
+            cout<<"Press 's' to store:";
+            char t;
+            cin>>t;
+            if (t == 's') this->add(variable);
         }
     }
 }
