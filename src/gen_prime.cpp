@@ -204,6 +204,7 @@ void stack::gen_prime()
                 {
                     //comment HERE
                     mpf_add_ui(prime_amount, prime_amount, 1);
+                    REPORT<<now<<endl;
                     REPORT<<"DEGS:"<<endl;
                     for (i = 0; i < number; ++i) 
                     {
